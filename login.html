@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set shop - ลงชื่อเข้าใช้</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="login-styles.css">
+</head>
+
+<body>
+    <div class="background-wrapper">
+        <div class="bg-blur"></div>
+    </div>
+
+    <div class="login-wrapper">
+        <div class="login-header">
+            <h1>เพิ่มบัญชี</h1>
+            <p>กลับไปสนุกกับประสบการณ์ของคุณ</p>
+        </div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label>ชื่อผู้ใช้ อีเมล หรือหมายเลขโทรศัพท์</label>
+                <input type="text" id="login-username" placeholder="ชื่อผู้ใช้ อีเมล หรือหมายเลขโทรศัพท์" required>
+            </div>
+
+            <div class="form-group">
+                <label>รหัสผ่าน</label>
+                <div class="password-input-wrap">
+                    <input type="password" id="login-password" placeholder="รหัสผ่าน" required>
+                    <button type="button" class="toggle-password" id="toggle-password">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="login-error" class="error-message"></div>
+
+            <button type="submit" class="primary-btn">ลงชื่อเข้าใช้</button>
+
+            <div class="forgot-link">
+                <a href="#">ลืมรหัสผ่านหรือชื่อผู้ใช้ใช่ไหม?</a>
+            </div>
+
+            <div class="divider">
+                <span>หรือ</span>
+            </div>
+
+            <button type="button" class="secondary-btn">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                ส่งรหัสทางอีเมล
+            </button>
+
+            <button type="button" class="secondary-btn">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                ลงชื่อเข้าใช้ด่วน
+            </button>
+
+            <div class="signup-link">
+                ยังไม่มีบัญชีใช่ไหม? <a href="index.html">สร้างบัญชี</a>
+            </div>
+
+            <div
+                style="margin-top: 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                <a href="admin.html"
+                    style="color: #ff9900; font-size: 12px; text-decoration: none; opacity: 0.6;">เข้าสู่ระบบจัดการ
+                    (Admin)</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        const togglePassword = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('login-password');
+
+        togglePassword.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            if (type === 'text') {
+                this.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+            } else {
+                this.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+            }
+        });
+
+        // Auto-fill from localStorage if available (demo purpose)
+        const savedUsername = localStorage.getItem('registeredUsername');
+        const savedPassword = localStorage.getItem('registeredPassword');
+
+        if (savedUsername) {
+            document.getElementById('login-username').value = savedUsername;
+        }
+
+        // Handle login submission
+        document.getElementById('login-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value;
+            const password = passwordInput.value;
+            const errorElement = document.getElementById('login-error');
+
+            const API_BASE = "/api";
+
+            // 1. ตรวจสอบการเข้าสู่ระบบแบบผู้ดูแลระบบ (Admin)
+            if (username === 'Nitisak22' && password === 'kobkeropy22') {
+                errorElement.style.display = 'none';
+                localStorage.setItem('isAdminLoggedIn', 'true');
+                localStorage.setItem('lastLoggedInUser', 'Nitisak22');
+                window.location.href = 'admin.html';
+                return;
+            }
+
+            // 2. ตรวจสอบจาก Backend API
+            fetch(`${API_BASE}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        errorElement.style.display = 'none';
+                        localStorage.setItem('lastLoggedInUser', username);
+                        localStorage.removeItem('isAdminLoggedIn');
+                        window.location.href = 'shop.html';
+                    } else {
+                        errorElement.textContent = data.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+                        errorElement.style.display = 'block';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    errorElement.textContent = 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้';
+                    errorElement.style.display = 'block';
+                });
+        });
+    </script>
+</body>
+
+</html>

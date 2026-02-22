@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set shop - ระบบหลังบ้าน (Admin)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+
+<body>
+    <!-- Login Form directly on Admin Page -->
+    <div id="admin-login-overlay" class="admin-login-overlay">
+        <div class="admin-login-box">
+            <h2>ลงชื่อเข้าใช้ระบบหลังบ้าน</h2>
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label>ชื่อผู้ใช้งาน (Admin)</label>
+                    <input type="text" id="admin-username" required>
+                </div>
+                <div class="form-group">
+                    <label>รหัสผ่าน</label>
+                    <input type="password" id="admin-password" required>
+                </div>
+                <div id="admin-error" class="error-msg">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!</div>
+                <button type="submit" class="admin-btn">เข้าสู่ระบบ</button>
+            </form>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="shop.html" style="color: #666; font-size: 13px; text-decoration: none;">← กลับไปที่หน้าหลัก</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="admin-dashboard" style="display: none;">
+        <header class="admin-header">
+            <div class="logo">
+                <h1>SET<span>SHOP</span> Admin Panel</h1>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="shop.html" class="logout-btn"
+                    style="text-decoration: none; display: flex; align-items: center; background-color: #3b61fa; border-color: #3b61fa;">ไปที่หน้าเว็บ</a>
+                <button id="logout-btn" class="logout-btn">ออกจากระบบ</button>
+            </div>
+        </header>
+
+        <main class="admin-content">
+            <div class="stats-cards">
+                <div class="card">
+                    <h3>ผู้ใช้งานทั้งหมด</h3>
+                    <p id="total-users">0</p>
+                </div>
+            </div>
+
+            <section class="products-section"
+                style="margin-bottom: 30px; background: linear-gradient(145deg, #232527, #1b1c1e); padding: 24px; border-radius: 12px; border: 1px solid #393b3d; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+                <div class="section-header" style="margin-bottom: 0;">
+                    <div>
+                        <h2 style="display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#ff9900"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="12" y1="8" x2="12" y2="16"></line>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                            ระบบจัดการสินค้า
+                        </h2>
+                        <div style="font-size: 13px; color: #ff9900; margin-top: 6px;">
+                            เพิ่มสินค้าได้ทันทีโดยไม่ต้องพึ่ง Database (จัดเก็บข้อมูลบนเครื่อง)
+                        </div>
+                    </div>
+                    <button class="export-btn"
+                        style="background: linear-gradient(90deg, #ff9900, #ffb84d); color: #111; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; transition: transform 0.2s, box-shadow 0.2s; font-weight: 800; box-shadow: 0 4px 12px rgba(255,153,0,0.3);"
+                        onmouseover="this.style.transform='translateY(-2px)';"
+                        onmouseout="this.style.transform='translateY(0)';" onclick="addNewProduct()">+
+                        เพิ่มสินค้าใหม่</button>
+                </div>
+
+                <div class="table-responsive" style="margin-top: 20px;">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>ชื่อสินค้า</th>
+                                <th>ราคา (บาท)</th>
+                                <th>สต็อก</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body">
+                            <!-- Products will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="users-section">
+                <div class="section-header">
+                    <h2>รายชื่อผู้ใช้ลงทะเบียนล่าสุด</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="export-csv-btn" class="export-btn"
+                            style="background-color: transparent; color: #4CAF50; border: 1px solid #4CAF50; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; transition: 0.2s;">บันทึกข้อมูลถาวร
+                            (CSV)</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>ลำดับ</th>
+                                <th>ชื่อผู้ใช้ (Username)</th>
+                                <th>รหัสผ่าน (Password)</th>
+                                <th>ยอดเงิน (S)</th>
+                                <th>วันที่ลงทะเบียน</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <!-- Data will be populated here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Admin Alert Modal -->
+    <div id="admin-alert-modal" class="admin-modal">
+        <div class="admin-modal-content" style="text-align: center; align-items: center; max-width: 350px;">
+            <div
+                style="background-color: rgba(59,97,250,0.1); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#3b61fa" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <h2 id="admin-alert-title">แจ้งเตือน</h2>
+            <p id="admin-alert-text"></p>
+            <button class="admin-btn" style="width: 100%; border-radius: 6px;" onclick="closeAdminAlert()">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Product Edit/Add Modal -->
+    <div id="product-modal" class="admin-modal">
+        <div class="admin-modal-content" style="max-width: 500px;">
+            <h2 id="product-modal-title">เพิ่มสินค้าใหม่</h2>
+            <div class="form-group">
+                <label>ชื่อสินค้า</label>
+                <input type="text" id="p-name" class="admin-modal-input" style="margin-bottom: 10px;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>ราคา (บาท)</label>
+                    <input type="number" id="p-price" class="admin-modal-input" style="margin-bottom: 10px;">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>สต็อกเริ่มต้น</label>
+                    <input type="number" id="p-stock" class="admin-modal-input" style="margin-bottom: 10px;">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ลิงก์รูปภาพ (URL)</label>
+                <input type="text" id="p-image" class="admin-modal-input" placeholder="https://example.com/image.png"
+                    style="margin-bottom: 10px;">
+            </div>
+            <div class="form-group">
+                <label>ลิงก์ดาวน์โหลด / รหัสสินค้า</label>
+                <input type="text" id="p-link" class="admin-modal-input" style="margin-bottom: 10px;">
+            </div>
+            <div class="form-group">
+                <label>รายละเอียดสินค้า</label>
+                <textarea id="p-desc" class="admin-modal-input"
+                    style="height: 100px; resize: vertical; margin-bottom: 10px;"></textarea>
+            </div>
+            <div class="admin-modal-actions">
+                <button class="admin-btn"
+                    style="background-color: #111214; border: 1px solid #3d3d3d; width: auto; color: #fff;"
+                    onclick="closeProductModal()">ยกเลิก</button>
+                <button class="admin-btn" id="product-save-btn" style="width: auto;"
+                    onclick="saveProduct()">บันทึกข้อมูล</button>
+            </div>
+        </div>
+    </div>
+    <!-- Admin Prompt Modal -->
+    <div id="admin-prompt-modal" class="admin-modal">
+        <div class="admin-modal-content" id="admin-prompt-box">
+            <h2 id="admin-prompt-title">ยืนยันรายการ</h2>
+            <p id="admin-prompt-text">กรุณากรอกข้อมูลเพื่อดำเนินการต่อ</p>
+            <input type="text" id="admin-prompt-input" class="admin-modal-input" placeholder="...">
+            <div class="admin-modal-actions">
+                <button class="admin-btn"
+                    style="background-color: #111214; border: 1px solid #3d3d3d; width: auto; color: #fff;"
+                    onclick="closeAdminPrompt()">ยกเลิก</button>
+                <button class="admin-btn" id="admin-prompt-submit-btn" style="width: auto;"
+                    onclick="submitAdminPrompt()">ตกลง</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Custom Modal Logic
+        function showAdminAlert(title, text) {
+            document.getElementById('admin-alert-title').innerHTML = title;
+            document.getElementById('admin-alert-text').innerHTML = text;
+            document.getElementById('admin-alert-modal').style.display = 'flex';
+        }
+        function closeAdminAlert() { document.getElementById('admin-alert-modal').style.display = 'none'; }
+
+        function showAdminPrompt(title, text, placeholder, btnText, btnColor, themeColor, callback) {
+            document.getElementById('admin-prompt-title').innerHTML = title;
+            document.getElementById('admin-prompt-title').style.color = themeColor;
+            document.getElementById('admin-prompt-box').style.borderTopColor = themeColor;
+
+            document.getElementById('admin-prompt-text').innerHTML = text;
+            document.getElementById('admin-prompt-input').value = "";
+            document.getElementById('admin-prompt-input').placeholder = placeholder;
+
+            const submitBtn = document.getElementById('admin-prompt-submit-btn');
+            submitBtn.textContent = btnText;
+            submitBtn.style.backgroundColor = btnColor;
+
+            document.getElementById('admin-prompt-modal').style.display = 'flex';
+            window.currentAdminPromptCallback = callback;
+            setTimeout(() => document.getElementById('admin-prompt-input').focus(), 0);
+        }
+        function closeAdminPrompt() { document.getElementById('admin-prompt-modal').style.display = 'none'; }
+
+        function submitAdminPrompt() {
+            const val = document.getElementById('admin-prompt-input').value;
+            closeAdminPrompt();
+            if (window.currentAdminPromptCallback) window.currentAdminPromptCallback(val);
+        }
+
+        const API_BASE = "/api";
+
+        // Authentication check
+        const loginForm = document.getElementById('admin-login-form');
+        const overlay = document.getElementById('admin-login-overlay');
+        const dashboard = document.getElementById('admin-dashboard');
+        const errorMsg = document.getElementById('admin-error');
+
+        if (localStorage.getItem('isAdminLoggedIn') === 'true') {
+            showDashboard();
+        }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('admin-username').value;
+            const pass = document.getElementById('admin-password').value;
+
+            if (user === 'Nitisak22' && pass === 'kobkeropy22') {
+                localStorage.setItem('isAdminLoggedIn', 'true');
+                showDashboard();
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('isAdminLoggedIn');
+            window.location.href = 'login.html';
+        });
+
+        function showDashboard() {
+            overlay.style.display = 'none';
+            dashboard.style.display = 'block';
+            loadUsersData();
+            loadProductsData();
+        }
+
+        async function loadProductsData() {
+            const tableBody = document.getElementById('products-table-body');
+            try {
+                const res = await fetch(`${API_BASE}/products`);
+                const products = await res.json();
+                tableBody.innerHTML = '';
+                products.forEach(p => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td>${p.id}</td>
+                <td>${p.name}</td>
+                <td>${p.price}</td>
+                <td style="color: #ff9900; font-weight: bold;">${p.stock}</td>
+                <td>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="editProduct('${p.id}')" style="background-color: #3b61fa; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">📝 แก้ไข</button>
+                        <button onclick="addStockAdmin('${p.id}', '${p.name}')" style="background-color: #ff9900; color: #111; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">+ เพิ่มสต็อก</button>
+                        <button onclick="confirmDeleteProduct('${p.id}', '${p.name}')" style="background-color: transparent; color: #ff4d4f; border: 1px solid #ff4d4f; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">ลบสินค้า</button>
+                    </div>
+                </td>
+                `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error('Load products error:', err);
+            }
+        }
+
+        function addStockAdmin(id, name) {
+            showAdminPrompt('เพิ่มสต็อกสินค้า', `ระบุจำนวนสต็อกที่ต้องการเพิ่มให้ <strong>"${name}"</strong>:`, "100", "เพิ่มสต็อก", "#ff9900", "#ff9900", async function (val) {
+                const amount = parseInt(val);
+                if (isNaN(amount) || amount <= 0) {
+                    showAdminAlert('ผิดพลาด', 'กรุณาระบุจำนวนสต็อกให้ถูกต้อง');
+                    return;
+                }
+                try {
+                    const res = await fetch(`${API_BASE}/products/${id}/stock`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ amount })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        loadProductsData();
+                        showAdminAlert('สำเร็จ', `เพิ่มสต็อกให้ "${name}" เรียบร้อยแล้ว!`);
+                    }
+                } catch (err) {
+                    showAdminAlert('ผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+                }
+            });
+        }
+
+        async function confirmDeleteProduct(id, name) {
+            if (!confirm(`ยืนยันการลบสินค้า "${name}" ถาวรหรือไม่?`)) return;
+            try {
+                const res = await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    loadProductsData();
+                    showAdminAlert('สำเร็จ', 'ลบสินค้าเรียบร้อยแล้ว');
+                }
+            } catch (err) {
+                showAdminAlert('ผิดพลาด', 'ไม่สามารถลบสินค้าได้');
+            }
+        }
+
+        async function loadUsersData() {
+            const tableBody = document.getElementById('users-table-body');
+            const totalUsersElem = document.getElementById('total-users');
+            try {
+                const res = await fetch(`${API_BASE}/users`);
+                const usersArray = await res.json();
+                totalUsersElem.textContent = usersArray.length;
+                tableBody.innerHTML = '';
+
+                if (usersArray.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6" class="no-data">ไม่พบข้อมูลผู้ลงทะเบียน</td></tr>';
+                    return;
+                }
+
+                usersArray.forEach((user, index) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${user.username}</td>
+                <td><span class="password-field">${user.password}</span></td>
+                <td style="color: #ff9900; font-weight: bold;">${user.balance || 0} S</td>
+                <td>${user.registerDate || '-'}</td>
+                <td>
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="addMoney('${user.username}')" style="background-color: #3b61fa; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">เติมเงิน</button>
+                        <button onclick="confirmDeleteUser('${user.username}')" style="background-color: transparent; color: #ff4d4f; border: 1px solid #ff4d4f; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">ลบบัญชี</button>
+                    </div>
+                </td>
+                `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error('Load users error:', err);
+            }
+        }
+
+        function addMoney(username) {
+            showAdminPrompt('เติมเงินให้ผู้ใช้',
+                `ระบุจำนวนเงิน (S) ที่ต้องการเติมให้ <strong>"${username}"</strong>:`,
+                "0",
+                "เพิ่มเงิน", "#3b61fa", "#3b61fa",
+                async function (amount) {
+                    const parsedAmount = parseInt(amount);
+                    if (isNaN(parsedAmount) || parsedAmount < 0) {
+                        showAdminAlert('ผิดพลาด', 'กรุณากรอกจำนวนเงินให้ถูกต้อง!');
+                        return;
+                    }
+                    try {
+                        const res = await fetch(`${API_BASE}/users/${username}/balance`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ amount: parsedAmount })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            loadUsersData();
+                            showAdminAlert('สำเร็จ', `เติมเงินจำนวน ${parsedAmount} S ให้ "${username}" เรียบร้อย!`);
+                        }
+                    } catch (err) {
+                        showAdminAlert('ผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+                    }
+                }
+            );
+        }
+
+        function confirmDeleteUser(username) {
+            showAdminPrompt('ลบบัญชีผู้ใช้งานถาวร ⚠️',
+                `ยืนยันลบ "${username}" ถาวร? พิมพ์ "CONFIRM"`,
+                "",
+                "ลบเลย", "#ff4d4f", "#ff4d4f",
+                async function (val) {
+                    if (val === "CONFIRM") {
+                        try {
+                            const res = await fetch(`${API_BASE}/users/${username}`, { method: 'DELETE' });
+                            const data = await res.json();
+                            if (data.success) {
+                                loadUsersData();
+                                showAdminAlert('สำเร็จ', `ลบผู้ใช้ "${username}" เรียบร้อย`);
+                            }
+                        } catch (err) {
+                            showAdminAlert('ผิดพลาด', 'เกิดข้อผิดพลาด');
+                        }
+                    }
+                }
+            );
+        }
+
+        let editingProductId = null;
+
+        function closeProductModal() {
+            document.getElementById('product-modal').style.display = 'none';
+        }
+
+        function addNewProduct() {
+            editingProductId = null;
+            document.getElementById('product-modal-title').textContent = 'เพิ่มสินค้าใหม่';
+            document.getElementById('p-name').value = '';
+            document.getElementById('p-price').value = '';
+            document.getElementById('p-stock').value = '';
+            document.getElementById('p-image').value = '';
+            document.getElementById('p-link').value = '';
+            document.getElementById('p-desc').value = '';
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        async function editProduct(id) {
+            try {
+                const res = await fetch(`${API_BASE}/products`);
+                const products = await res.json();
+                const p = products.find(prod => prod.id === id);
+                if (p) {
+                    editingProductId = id;
+                    document.getElementById('product-modal-title').textContent = 'แก้ไขข้อมูลสินค้า';
+                    document.getElementById('p-name').value = p.name || '';
+                    document.getElementById('p-price').value = p.price || '';
+                    document.getElementById('p-stock').value = p.stock || '';
+                    document.getElementById('p-image').value = p.imageUrl || '';
+                    document.getElementById('p-link').value = p.downloadLink || '';
+                    document.getElementById('p-desc').value = p.desc || '';
+                    document.getElementById('product-modal').style.display = 'flex';
+                }
+            } catch (err) {
+                showAdminAlert('ผิดพลาด', 'ไม่สามารถดึงข้อมูลสินค้าได้');
+            }
+        }
+
+        async function saveProduct() {
+            const name = document.getElementById('p-name').value;
+            const price = document.getElementById('p-price').value;
+            const stock = document.getElementById('p-stock').value;
+            const imageUrl = document.getElementById('p-image').value;
+            const downloadLink = document.getElementById('p-link').value;
+            const desc = document.getElementById('p-desc').value;
+
+            if (!name || !price) {
+                showAdminAlert('ผิดพลาด', 'กรุณาระบุชื่อและราคาสินค้า');
+                return;
+            }
+
+            const payload = {
+                name,
+                price: parseInt(price),
+                stock: parseInt(stock) || 0,
+                imageUrl,
+                downloadLink,
+                desc: desc || name,
+                type: "Normal" // Default type
+            };
+
+            try {
+                const url = editingProductId ? `${API_BASE}/products/${editingProductId}` : `${API_BASE}/products`;
+                const method = editingProductId ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeProductModal();
+                    loadProductsData();
+                    showAdminAlert('สำเร็จ', editingProductId ? 'อัปเดตข้อมูลสินค้าแล้ว' : 'เพิ่มสินค้าใหม่แล้ว');
+                }
+            } catch (err) {
+                showAdminAlert('ผิดพลาด', 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+            }
+        }
+    </script>
+</body>
+
+</html>
