@@ -7,11 +7,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="shop-styles.css">
     <style>
-        /* สไตล์เสริมสำหรับหิมะ */
+        /* สไตล์เสริมสำหรับหิมะและ Carousel */
         #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
-        .snowflake { position: absolute; top: -10px; color: #fff; user-select: none; z-index: 9999; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)); animation: fall linear infinite, sway ease-in-out infinite; }
+        .snowflake { position: absolute; top: -10px; color: #fff; user-select: none; z-index: 9999; filter: drop-shadow(0 0 5px rgba(255,153,0,0.4)); animation: fall linear infinite, sway ease-in-out infinite; }
         @keyframes fall { 0% { top: -10%; } 100% { top: 110%; } }
         @keyframes sway { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(50px); } }
+        
+        /* แก้ไข Carousel ให้แสดงผล */
+        .carousel-track { display: flex; gap: 15px; width: max-content; animation: scroll 30s linear infinite; padding: 10px 0; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .carousel-item { background: #1a1b1e; border: 1px solid #333; padding: 10px 15px; border-radius: 8px; min-width: 250px; }
+        
+        /* Modal สไตล์ */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-box { background: #1a1b1e; border: 1px solid #ff9900; border-radius: 12px; width: 90%; max-width: 500px; padding: 25px; position: relative; }
     </style>
 </head>
 <body>
@@ -20,7 +29,7 @@
             <div class="logo">SET<span>SHOP</span></div>
             <div class="nav-right">
                 <span id="u-display" class="user-greeting">ผู้ใช้: ...</span>
-                <span id="u-balance" class="user-greeting" style="color: #4CAF50; font-weight: 700;">ยอดเงิน: 0 S</span>
+                <span id="u-balance" class="user-greeting" style="color: #4CAF50; font-weight: 700; background: rgba(76,175,80,0.1); padding: 5px 12px; border-radius: 6px;">ยอดเงิน: 0 S</span>
                 <button onclick="showHistory()" class="nav-btn history-btn">ประวัติการซื้อ</button>
                 <button onclick="logout()" class="nav-btn logout-btn">ออกจากระบบ</button>
             </div>
@@ -28,80 +37,67 @@
     </nav>
 
     <main class="shop-container">
-        <!-- ประกาศ (Announcement) ตามรูปภาพล่าสุด -->
-<section class="announcement-section">
-    <div class="announcement-card" style="background: linear-gradient(145deg, #1b1c1e, #0f0f10); border: 2px solid #ff9900; box-shadow: 0 0 20px rgba(255, 153, 0, 0.1);">
-        <div class="announcement-header" style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 20px;">
-            <div class="logo" style="font-family: 'Brush Script MT', cursive; font-size: 40px; color: #fff;">Set Shop</div>
-            <h2 style="color: #ff9900; font-size: 24px; margin-top: 10px;">ประกาศจากทางร้าน</h2>
-            <p style="color: #bbb; font-size: 16px;">เรื่อง เงื่อนไขการให้บริการ</p>
-            <p style="color: #888; font-size: 13px; margin-top: 5px;">สัญญาฉบับนี้จัดทำขึ้นเพื่อแจ้งให้ผู้ใช้งานทุกท่านทราบ โดยมีข้อตกลงดังต่อไปนี้</p>
-        </div>
-        
-        <div class="announcement-body" style="padding: 20px 0;">
-            <div class="rules-section">
-                <h4 style="color: #fff; text-align: center; margin-bottom: 15px; text-decoration: underline;">Rules</h4>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin-bottom: 10px; color: #eee; font-size: 14px;">• การซื้อสินค้าแล้วจะไม่สามารถขอคืนเงินได้ทุกกรณี</li>
-                    <li style="margin-bottom: 10px; color: #eee; font-size: 14px;">• หากระหว่างการใช้งานเกิดปัญหาจากตัวผู้ใช้งานเอง และทำให้สินค้าใช้งานไม่ได้หรือ Key พัง ทางร้านจะไม่รับผิดชอบใด ๆ ทั้งสิ้น</li>
-                    <li style="margin-bottom: 10px; color: #eee; font-size: 14px;">• หากทำผิดกฎในการใช้งาน ทางเราจะทำการ Blacklist ทันที โดยไม่มีการคืนเงินใด ๆ ทั้งสิ้น</li>
-                    <li style="margin-bottom: 10px; color: #eee; font-size: 14px;">• หากทำการโกงโดยวิธีต่าง ๆ เช่น สลิปปลอม ทางเราจะ Blacklist ทันทีและประจานท่านทันที</li>
-                    <li style="margin-bottom: 10px; color: #eee; font-size: 14px;">⚠️ • การใช้โปรมีความเสี่ยงที่จะโดนแบนอยู่แล้ว โปรดยอมรับในส่วนนี้ด้วย</li>
-                </ul>
+        <!-- ประกาศ (Announcement) -->
+        <section class="announcement-section">
+            <div class="announcement-card" style="border: 2px solid #ff9900; position: relative; overflow: hidden;">
+                <div style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                    <h2 style="color: #ff9900;">ประกาศจากทางร้าน</h2>
+                    <p style="color: #bbb;">เรื่อง เงื่อนไขการให้บริการ</p>
+                </div>
+                <div style="padding: 15px 0; font-size: 14px; color: #eee;">
+                    <p>• ซื้อแล้วไม่สามารถขอคืนเงินได้ทุกกรณี</p>
+                    <p>• หากปัญหาเกิดจากผู้ใช้เอง ทางร้านไม่รับผิดชอบ</p>
+                    <p>• หากโกงหรือใช้สลิปปลอม จะทำการ Blacklist ทันที</p>
+                    <p>⚠️ • การใช้โปรมีความเสี่ยง โปรดยอมรับความเสี่ยงด้วยตนเอง</p>
+                </div>
+                <div style="text-align: right; font-size: 11px; color: #666;">ประกาศวันที่ 6 ก.พ. 2026</div>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 60px; color: rgba(255,255,255,0.02); pointer-events: none;">Set Shop</div>
             </div>
+        </section>
 
-            <div class="tos-section" style="margin-top: 25px; border-top: 1px dashed #444; padding-top: 20px;">
-                <h4 style="color: #fff; text-align: center; margin-bottom: 15px;">Terms Of Service</h4>
-                <ul style="list-style: none; padding: 0; text-align: center;">
-                    <li style="margin-bottom: 8px; color: #bbb; font-size: 14px;">• ทางร้านซัพพอร์ตหลังการซื้อขายทุกครั้ง</li>
-                    <li style="margin-bottom: 8px; color: #bbb; font-size: 14px;">• Support Everything สามารถติดต่อแจ้งปัญหา กด Ticket ได้ตลอด</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="announcement-footer" style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; font-size: 12px; color: #666;">
-            <div>
-                <strong>ประกาศโดย</strong><br>
-                <span>Set Shop</span>
-            </div>
-            <div style="text-align: right;">
-                <strong>วันที่ 6 กุมภาพันธ์ 2026</strong>
-            </div>
-        </div>
-
-        <!-- ลายน้ำจางๆ ตรงกลางแบบในรูป -->
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 100px; font-weight: 800; color: rgba(255,255,255,0.03); pointer-events: none; white-space: nowrap; font-family: 'Brush Script MT', cursive;">Set Shop</div>
-    </div>
-</section>
-
-
-        <!-- ประวัติการซื้อล่าสุด (เลื่อนได้) -->
+        <!-- การซื้อล่าสุด (Carousel) -->
         <section class="recent-orders-section">
             <div class="section-header">
                 <h2 class="main-title"><span class="dot"></span> การซื้อล่าสุด</h2>
             </div>
-            <div class="carousel-container">
+            <div class="carousel-container" style="background: #111; border-radius: 10px; overflow: hidden; height: 80px;">
                 <div class="carousel-track" id="recent-orders-track">
-                    <!-- รายการจะถูกโหลดด้วย JavaScript -->
+                    <!-- รายการจะถูกโหลดด้วย JS -->
                 </div>
             </div>
         </section>
 
         <!-- รายการสินค้า -->
-        <div class="section-header">
+        <div class="section-header" style="margin-top: 30px;">
             <h2 class="main-title"><span class="dot"></span> รายการสินค้าแนะนำ</h2>
         </div>
         <div class="products-grid" id="products-grid">
-            <div style="color: #888; text-align: center; grid-column: 1/-1; padding: 50px;">กำลังโหลดสินค้า...</div>
+            <!-- สินค้าโหลดที่นี่ -->
         </div>
     </main>
 
+    <!-- Modal ยืนยันการซื้อและรายละเอียด -->
+    <div id="buy-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h2 id="m-title" style="color: #ff9900; margin-bottom: 10px;">ชื่อสินค้า</h2>
+            <p id="m-desc" style="color: #bbb; margin-bottom: 20px; font-size: 14px;">รายละเอียดสินค้า...</p>
+            <div style="background: #222; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <p style="color: #fff;">ราคา: <span id="m-price" style="color: #ff9900; font-weight: 700;">0</span> ฿</p>
+                <p id="m-stock" style="color: #888; font-size: 12px; margin-top: 5px;">คงเหลือ: 0</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="closeModal('buy-modal')" style="flex: 1; padding: 12px; background: #333; color: #fff; border: none; border-radius: 6px; cursor: pointer;">ยกเลิก</button>
+                <button id="m-confirm-btn" style="flex: 1; padding: 12px; background: #ff9900; color: #111; border: none; border-radius: 6px; font-weight: 700; cursor: pointer;">ยืนยันการซื้อ</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal ประวัติส่วนตัว -->
-    <div id="h-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; align-items:center; justify-content:center;">
-        <div class="modal-content" style="background:#1a1b1e; padding:25px; border-radius:12px; width:90%; max-width:500px; border:1px solid #ff9900;">
-            <h2 style="color:#ff9900; border-bottom:1px solid #ff9900; padding-bottom:10px; margin-bottom:15px">ประวัติการสั่งซื้อของคุณ</h2>
-            <div id="h-list" style="max-height:300px; overflow-y:auto"></div>
-            <button onclick="document.getElementById('h-modal').style.display='none'" style="margin-top:20px; width:100%; padding:10px; background:#444; color:white; border:none; border-radius:4px; cursor:pointer">ปิด</button>
+    <div id="h-modal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 600px;">
+            <h2 style="color: #ff9900; border-bottom: 1px solid #ff9900; padding-bottom: 10px; margin-bottom: 15px;">ประวัติการสั่งซื้อของคุณ</h2>
+            <div id="h-list" style="max-height: 400px; overflow-y: auto;"></div>
+            <button onclick="closeModal('h-modal')" style="margin-top: 20px; width: 100%; padding: 12px; background: #444; color: #fff; border: none; border-radius: 6px; cursor: pointer;">ปิดหน้าต่าง</button>
         </div>
     </div>
 
@@ -112,7 +108,7 @@
 
         async function init() {
             try {
-                // โหลดข้อมูลยูเซอร์
+                // โหลดเงินยูเซอร์
                 const uRes = await fetch('/api/users');
                 const users = await uRes.json();
                 const me = users.find(u => u.username.toLowerCase() === user.toLowerCase());
@@ -131,61 +127,63 @@
                                 <h3 class="product-name">${p.name}</h3>
                                 <div class="price-row">
                                     <div class="price"><span class="amount">${p.price} ฿</span></div>
-                                    <button class="buy-btn" onclick="buy('${p.id}', '${p.name}', ${p.price})">ซื้อเลย</button>
+                                    <button class="buy-btn" onclick="openBuyModal('${p.id}', '${p.name}', ${p.price}, '${p.desc || 'ไม่มีรายละเอียด'}', ${p.stock})">ซื้อเลย</button>
                                 </div>
-                                <div class="stock" style="margin-top:10px">เหลือ: <span>${p.stock}</span></div>
+                                <div class="stock" style="margin-top:10px; font-size:11px; color:#666;">คลัง: <span>${p.stock}</span></div>
                             </div>
                         </div>`;
                 });
 
-                // โหลดการซื้อล่าสุด (Carousel)
-                const oRes = await fetch('/api/orders/all'); // ดึงการซื้อทั้งหมด
+                // โหลด Carousel การซื้อล่าสุด
+                const oRes = await fetch('/api/orders/all');
                 const allOrders = await oRes.json();
                 const track = document.getElementById('recent-orders-track');
                 track.innerHTML = '';
-                // ทำซ้ำเพื่อให้เลื่อนได้ไม่สิ้นสุด
-                const displayOrders = [...allOrders, ...allOrders];
-                displayOrders.forEach(o => {
+                
+                // ถ้ามีข้อมูลน้อย ให้ทำซ้ำเพื่อให้เลื่อนได้สวยๆ
+                const list = allOrders.length > 0 ? [...allOrders, ...allOrders, ...allOrders] : [];
+                list.forEach(o => {
                     track.innerHTML += `
                         <div class="carousel-item">
-                            <div class="c-info">
-                                <div class="c-name">${o.itemName}</div>
-                                <div class="c-date">${o.username} - ${o.date}</div>
-                                <div class="c-status">สำเร็จ</div>
-                            </div>
+                            <div style="color:#ff9900; font-weight:700; font-size:13px;">${o.itemName}</div>
+                            <div style="color:#888; font-size:11px;">โดยคุณ ${o.username} เมื่อ ${o.date.split(' ')[1]}</div>
                         </div>`;
                 });
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error('Init Error:', e); }
         }
 
-        async function buy(id, name, price) {
-            if(!confirm(`ยืนยันการซื้อ ${name} ราคา ${price} ฿?`)) return;
-            const res = await fetch('/api/buy', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ username: user, productId: id })
-            });
-            const data = await res.json();
-            if(data.success) { alert('สำเร็จ!'); init(); }
-            else alert(data.message);
+        let selectedId = null;
+        function openBuyModal(id, name, price, desc, stock) {
+            selectedId = id;
+            document.getElementById('m-title').textContent = name;
+            document.getElementById('m-desc').textContent = desc;
+            document.getElementById('m-price').textContent = price;
+            document.getElementById('m-stock').textContent = `คงเหลือ: ${stock} ชิ้น`;
+            document.getElementById('buy-modal').style.display = 'flex';
+            
+            document.getElementById('m-confirm-btn').onclick = async () => {
+                const btn = document.getElementById('m-confirm-btn');
+                btn.disabled = true; btn.textContent = 'กำลังซื้อ...';
+                
+                try {
+                    const res = await fetch('/api/buy', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ username: user, productId: id })
+                    });
+                    const data = await res.json();
+                    if(data.success) {
+                        alert('ซื้อสำเร็จแล้ว! ตรวจสอบประวัติเพื่อรับสินค้า');
+                        closeModal('buy-modal');
+                        init();
+                    } else alert(data.message);
+                } catch(e) { alert('การเชื่อมต่อผิดพลาด'); }
+                
+                btn.disabled = false; btn.textContent = 'ยืนยันการซื้อ';
+            };
         }
 
         async function showHistory() {
             const res = await fetch('/api/orders/' + user);
             const history = await res.json();
-            const list = document.getElementById('h-list');
-            list.innerHTML = history.length ? '' : '<p style="color:#888; text-align:center">ไม่มีประวัติ</p>';
-            history.forEach(h => {
-                list.innerHTML += `<div style="border-bottom:1px solid #333; padding:10px; color:#fff"><strong>${h.itemName}</strong> - ${h.price} ฿<br><small style="color:#888">${h.date}</small></div>`;
-            });
-            document.getElementById('h-modal').style.display = 'flex';
-        }
-
-        function logout() { localStorage.clear(); window.location.href='login.html'; }
-        
-        init();
-    </script>
-    <script src="snow.js"></script>
-</body>
-</html>
-
+            const list = document.getElementById('
