@@ -165,8 +165,18 @@
             </div>
             <div class="form-group">
                 <label>ลิงก์รูปภาพ (URL)</label>
-                <input type="text" id="p-image" class="admin-modal-input" placeholder="https://example.com/image.png"
-                    style="margin-bottom: 10px;">
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="p-image" class="admin-modal-input"
+                        placeholder="https://example.com/image.png" style="margin-bottom: 0;">
+                    <button class="admin-btn" style="width: auto; padding: 0 15px; background: #333;"
+                        onclick="previewImage()">ดูรูป</button>
+                </div>
+                <div id="image-preview-container"
+                    style="display: none; margin-top: 10px; text-align: center; background: #1a1b1e; border-radius: 12px; padding: 10px; border: 1px dashed #3d3d3d;">
+                    <img id="p-image-preview" src="" style="max-width: 100%; max-height: 150px; border-radius: 8px;">
+                    <div id="p-image-error" style="color: #ff4d4f; font-size: 11px; margin-top: 5px; display: none;">
+                        ลิงก์รูปภาพไม่ถูกต้อง หรือโหลดไม่ได้</div>
+                </div>
             </div>
             <div class="form-group">
                 <label>ลิงก์ดาวน์โหลด / รหัสสินค้า</label>
@@ -437,12 +447,33 @@
             editingProductId = null;
             document.getElementById('product-modal-title').textContent = 'เพิ่มสินค้าใหม่';
             document.getElementById('p-name').value = '';
-            document.getElementById('p-price').value = '';
-            document.getElementById('p-stock').value = '';
             document.getElementById('p-image').value = '';
             document.getElementById('p-link').value = '';
             document.getElementById('p-desc').value = '';
+            document.getElementById('image-preview-container').style.display = 'none';
             document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        function previewImage() {
+            const url = document.getElementById('p-image').value;
+            const container = document.getElementById('image-preview-container');
+            const img = document.getElementById('p-image-preview');
+            const error = document.getElementById('p-image-error');
+
+            if (!url) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'block';
+            error.style.display = 'none';
+            img.src = url;
+            img.style.display = 'inline-block';
+
+            img.onerror = () => {
+                img.style.display = 'none';
+                error.style.display = 'block';
+            };
         }
 
         async function editProduct(id) {
@@ -459,6 +490,10 @@
                     document.getElementById('p-image').value = p.imageUrl || '';
                     document.getElementById('p-link').value = p.downloadLink || '';
                     document.getElementById('p-desc').value = p.desc || '';
+
+                    if (p.imageUrl) previewImage();
+                    else document.getElementById('image-preview-container').style.display = 'none';
+
                     document.getElementById('product-modal').style.display = 'flex';
                 }
             } catch (err) {
@@ -524,3 +559,4 @@
 </body>
 
 </html>
+
