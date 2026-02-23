@@ -254,6 +254,23 @@
             } catch (err) { console.error('UI Update failed:', err); }
         }
 
+        async function openDetailsModal(id) {
+            const p = allProducts.find(prod => prod.id === id);
+            if (!p) return;
+
+            document.getElementById('det-name').textContent = p.name;
+            document.getElementById('det-price').textContent = `${p.price} ฿`;
+            document.getElementById('det-desc').textContent = p.desc || 'ไม่มีคำอธิบายสินค้า';
+            document.getElementById('det-img').textContent = p.name.substring(0, 2);
+
+            document.getElementById('det-buy-btn').onclick = () => {
+                closeAllModals();
+                openBuyModal(p.id, p.name, p.price);
+            };
+
+            document.getElementById('details-modal').style.display = 'flex';
+        }
+
         function openBuyModal(id, name, price) {
             currentProduct = { id, name, price };
             document.getElementById('buy-item-name').textContent = name;
@@ -343,6 +360,5 @@
 </body>
 
 </html>
-
 
 
