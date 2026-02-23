@@ -222,7 +222,8 @@
                 grid.innerHTML = '';
 
                 allProducts.forEach(p => {
-                    const imgHtml = p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : p.name.substring(0, 2);
+                    const fallback = p.name.substring(0, 2);
+                    const imgHtml = p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" onerror="onImageError(this, '${fallback}')">` : fallback;
                     grid.innerHTML += `
                         <div class="product-card" onclick="openDetailsModal('${p.id}')" style="cursor: pointer;">
                             <div class="product-img-box">${imgHtml}</div>
@@ -264,7 +265,8 @@
             document.getElementById('det-desc').textContent = p.desc || 'ไม่มีคำอธิบายสินค้า';
 
             const imgBox = document.getElementById('det-img');
-            imgBox.innerHTML = p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%; height:100%; object-fit:cover; border-radius:16px;">` : p.name.substring(0, 2);
+            imgBox.style.padding = '10px';
+            imgBox.innerHTML = p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%; height:100%; object-fit:contain; border-radius:12px;">` : p.name.substring(0, 2);
 
             document.getElementById('det-buy-btn').onclick = () => {
                 closeAllModals();
@@ -312,6 +314,15 @@
         function showSuccessModal(msg) {
             document.getElementById('success-msg').textContent = msg;
             document.getElementById('success-modal').style.display = 'flex';
+        }
+
+        // --- Helper for Image Fallback ---
+        function onImageError(img, altText) {
+            console.warn('Image failed to load:', img.src);
+            const parent = img.parentElement;
+            if (parent) {
+                parent.innerHTML = altText;
+            }
         }
 
         async function showHistory() {
