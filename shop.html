@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 
 <head>
@@ -124,13 +124,48 @@
         <div class="modal-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                 <h2 style="font-size: 24px; font-weight: 800; color: #ff9900;">ประวัติสั่งซื้อของคุณ</h2>
-                <div onclick="closeModal()" style="cursor: pointer; padding: 10px; font-size: 24px;">&times;</div>
+                <div onclick="closeAllModals()" style="cursor: pointer; padding: 10px; font-size: 24px;">&times;</div>
             </div>
             <div id="history-list" style="overflow-y: auto; max-height: 50vh;">
                 <!-- History Items -->
             </div>
-            <button onclick="closeModal()" class="btn-base"
+            <button onclick="closeAllModals()" class="btn-base"
                 style="width: 100%; margin-top: 20px; justify-content: center; background: #222;">ปิดหน้าต่าง</button>
+        </div>
+    </div>
+
+    <!-- Buy Confirmation Modal -->
+    <div id="buy-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h2 style="font-size: 20px; color: #fff; text-align: center;">🛒 ยืนยันการสั่งซื้อ</h2>
+            <div class="confirm-info">
+                <div id="buy-item-name" style="font-size: 18px; font-weight: 700;">ชื่อสินค้า</div>
+                <div id="buy-item-price" style="font-size: 36px; font-weight: 900; margin: 10px 0; color: #ff9900;">0 ฿
+                </div>
+                <div style="color: #666; font-size: 14px;">ยอดเงินจะถูกหักออกจากบัญชีของคุณทันที</div>
+            </div>
+            <div class="confirm-actions">
+                <button onclick="closeAllModals()" class="btn-base" style="justify-content: center;">ยกเลิก</button>
+                <button id="confirm-buy-btn" class="btn-base btn-primary"
+                    style="justify-content: center;">ยืนยันซื้อเลย</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="success-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <h2 style="color: #fff; margin-bottom: 10px; text-align: center;">สั่งซื้อสำเร็จ!</h2>
+            <p id="success-msg" style="color: #888; font-size: 14px; margin-bottom: 24px; text-align: center;">
+                รายการของคุณถูกบันทึกเรียบร้อยแล้ว</p>
+            <button onclick="closeAllModals()" class="btn-base btn-primary"
+                style="width: 100%; justify-content: center;">ตกลง</button>
         </div>
     </div>
 
@@ -141,6 +176,8 @@
 
         if (!currentUser) window.location.href = 'login.html';
         document.getElementById('user-info').textContent = `ผู้ใช้: ${currentUser}`;
+
+        let currentProduct = null;
 
         async function updateUI() {
             try {
@@ -165,7 +202,7 @@
                                 <div style="color: #666; font-size: 13px; margin-bottom: 20px;">พร้อมส่ง 24 ชม.</div>
                                 <div class="p-footer">
                                     <div class="p-price">${p.price} ฿</div>
-                                    <button onclick="handleBuy('${p.id}', '${p.name}', ${p.price})" class="btn-base btn-primary">ซื้อเลย</button>
+                                    <button onclick="openBuyModal('${p.id}', '${p.name}', ${p.price})" class="btn-base btn-primary">ซื้อเลย</button>
                                 </div>
                             </div>
                         </div>`;
@@ -189,20 +226,44 @@
             } catch (err) { console.error('UI Update failed:', err); }
         }
 
-        async function handleBuy(id, name, price) {
-            if (!confirm(`ยืนยันการสั่งซื้อ "${name}" ราคาชุดละ ${price} ฿?`)) return;
-            const res = await fetch(`${API_BASE}/buy`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: currentUser, productId: id })
-            });
-            const data = await res.json();
-            if (data.success) {
-                alert('สั่งซื้อสำเร็จ! ขอขอบคุณที่ใช้บริการ');
-                updateUI();
-            } else {
-                alert(data.message);
+        function openBuyModal(id, name, price) {
+            currentProduct = { id, name, price };
+            document.getElementById('buy-item-name').textContent = name;
+            document.getElementById('buy-item-price').textContent = `${price} ฿`;
+            document.getElementById('buy-modal').style.display = 'flex';
+        }
+
+        document.getElementById('confirm-buy-btn').onclick = async () => {
+            if (!currentProduct) return;
+            const btn = document.getElementById('confirm-buy-btn');
+            btn.disabled = true;
+            btn.textContent = 'กำลังซื้อ...';
+
+            try {
+                const res = await fetch(`${API_BASE}/buy`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: currentUser, productId: currentProduct.id })
+                });
+                const data = await res.json();
+
+                closeAllModals();
+                if (data.success) {
+                    showSuccessModal(`สั่งซื้อ "${currentProduct.name}" สำเร็จ! ขอขอบคุณที่ใช้บริการ`);
+                    updateUI();
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) { alert('เกิดข้อผิดพลาด'); }
+            finally {
+                btn.disabled = false;
+                btn.textContent = 'ยืนยันซื้อเลย';
             }
+        };
+
+        function showSuccessModal(msg) {
+            document.getElementById('success-msg').textContent = msg;
+            document.getElementById('success-modal').style.display = 'flex';
         }
 
         async function showHistory() {
@@ -237,17 +298,21 @@
             } catch (e) { list.innerHTML = 'ผิดพลาด'; }
         }
 
-        function closeModal() { document.getElementById('history-modal').style.display = 'none'; }
+        function closeAllModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+
         function logout() { localStorage.clear(); window.location.href = 'login.html'; }
 
         updateUI();
         setInterval(updateUI, 10000); // Auto-refresh every 10s
+
+        window.onclick = (e) => {
+            if (e.target.classList.contains('modal-overlay')) closeAllModals();
+        };
     </script>
     <script src="snow.js"></script>
 </body>
 
 </html>
-
-
-
 
