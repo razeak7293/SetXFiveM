@@ -7,11 +7,17 @@
     <title>Set shop - ร้านค้า</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="shop-styles.css">
-    <link rel="stylesheet" href="styles.css"> <!-- เชื่อมสไตล์หลักสำหรับหิมะ -->
+    <style>
+        /* ย้ายสไตล์หิมะมาไว้ในนี้โดยตรง เพื่อป้องกันไฟล์ตีกัน */
+        #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        .snowflake { position: absolute; top: -10px; color: #fff; user-select: none; z-index: 9999; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)); animation: fall linear infinite, sway ease-in-out infinite; }
+        @keyframes fall { 0% { top: -10%; } 100% { top: 110%; } }
+        @keyframes sway { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(50px); } }
+    </style>
 </head>
 
 <body>
-    <!-- Navigation -->
+    <!-- ระบบนำทาง -->
     <nav class="shop-nav">
         <div class="nav-container">
             <div class="logo">SET<span>SHOP</span></div>
@@ -27,136 +33,75 @@
         <div class="section-header">
             <div class="title-area">
                 <h2 class="main-title"><span class="dot"></span> รายการสินค้า</h2>
-                <p class="sub-title">เลือกซื้อสินค้าที่คุณต้องการ</p>
+                <p class="sub-title">Product Recommended</p>
             </div>
         </div>
 
         <div class="products-grid" id="products-grid">
-            <!-- สินค้าจะถูกโหลดขึ้นที่นี่ด้วย JavaScript -->
             <div style="color: #888; text-align: center; grid-column: 1/-1; padding: 50px;">กำลังโหลดสินค้า...</div>
         </div>
     </main>
 
-    <!-- Modal ยืนยันการซื้อ -->
-    <div id="confirm-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; align-items:center; justify-content:center;">
-        <div style="background:#232527; padding:30px; border-radius:12px; width:90%; max-width:400px; text-align:center; border: 1px solid #ff9900;">
-            <h2 style="color:#ff9900; margin-bottom:15px;">ยืนยันการสั่งซื้อ</h2>
-            <p id="confirm-text" style="color:#fff; margin-bottom:25px;"></p>
-            <div style="display:flex; gap:10px;">
-                <button onclick="closeModal()" style="flex:1; padding:12px; border-radius:6px; border:none; background:#444; color:white; cursor:pointer;">ยกเลิก</button>
-                <button id="confirm-buy-btn" style="flex:1; padding:12px; border-radius:6px; border:none; background:#ff9900; color:#111; font-weight:bold; cursor:pointer;">ยืนยันซื้อเลย</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         const API_BASE = "/api";
-        let activeUser = localStorage.getItem('lastLoggedInUser');
+        const activeUser = localStorage.getItem('lastLoggedInUser');
 
-        // ตรวจสอบการล็อกอิน
-        if (!activeUser) {
-            window.location.href = 'login.html';
-        } else {
-            document.getElementById('user-display').textContent = `ผู้ใช้: ${activeUser}`;
-        }
+        if (!activeUser) window.location.href = 'login.html';
+        else document.getElementById('user-display').textContent = `ผู้ใช้: ${activeUser}`;
 
-        // โหลดข้อมูลผู้ใช้ (ยอดเงิน)
-        async function fetchUser() {
+        async function init() {
             try {
-                const res = await fetch(`${API_BASE}/users`);
-                const users = await res.json();
+                // ดึงข้อมูลยอดเงิน
+                const uRes = await fetch(`${API_BASE}/users`);
+                const users = await uRes.json();
                 const user = users.find(u => u.username === activeUser);
-                if (user) {
-                    document.getElementById('user-balance').textContent = `ยอดเงิน: ${user.balance || 0} S`;
-                }
-            } catch (err) { console.error('Error fetching user:', err); }
-        }
+                if (user) document.getElementById('user-balance').textContent = `ยอดเงิน: ${user.balance || 0} S`;
 
-        // โหลดรายการสินค้า
-        async function fetchProducts() {
-            try {
-                const res = await fetch(`${API_BASE}/products`);
-                const products = await res.json();
+                // ดึงรายการสินค้า
+                const pRes = await fetch(`${API_BASE}/products`);
+                const products = await pRes.json();
                 const grid = document.getElementById('products-grid');
                 grid.innerHTML = '';
 
                 products.forEach(p => {
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    card.innerHTML = `
-                        <div class="product-image">
-                            <div class="img-placeholder">${p.imgText || p.name.substring(0,2)}</div>
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-name">${p.name}</h3>
-                            <div class="stock">เหลือ ${p.stock} ชิ้น</div>
-                            <div class="price-row">
-                                <div class="price">${p.price} ฿</div>
-                                <button class="buy-btn" onclick="openBuyModal('${p.id}', '${p.name}', ${p.price})">ซื้อเลย</button>
+                    grid.innerHTML += `
+                        <div class="product-card">
+                            <div class="product-image">
+                                <div class="img-placeholder">${p.imgText || p.name.substring(0,2)}</div>
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-name">${p.name}</h3>
+                                <div class="stock">เหลือ ${p.stock} ชิ้น</div>
+                                <div class="price-row">
+                                    <div class="price">${p.price} ฿</div>
+                                    <button class="buy-btn" onclick="buy('${p.id}', '${p.name}', ${p.price})">ซื้อเลย</button>
+                                </div>
                             </div>
                         </div>
                     `;
-                    grid.appendChild(card);
                 });
-            } catch (err) { console.error('Error fetching products:', err); }
+            } catch (err) { console.error(err); }
         }
 
-        let selectedProduct = null;
-
-        function openBuyModal(id, name, price) {
-            selectedProduct = { id, name, price };
-            document.getElementById('confirm-text').innerHTML = `ต้องการซื้อ <strong>${name}</strong><br>ราคา ${price} ฿ ใช่หรือไม่?`;
-            document.getElementById('confirm-modal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('confirm-modal').style.display = 'none';
-        }
-
-        // ระบบซื้อสินค้า
-        document.getElementById('confirm-buy-btn').onclick = async () => {
-            if (!selectedProduct) return;
-            const btn = document.getElementById('confirm-buy-btn');
-            btn.textContent = 'กำลังดำเนินการ...';
-            btn.disabled = true;
-
-            try {
-                const res = await fetch(`${API_BASE}/buy`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username: activeUser,
-                        productId: selectedProduct.id
-                    })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    alert('สั่งซื้อสำเร็จ!');
-                    closeModal();
-                    fetchUser();
-                    fetchProducts();
-                } else {
-                    alert('ผิดพลาด: ' + data.message);
-                }
-            } catch (err) { alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'); }
-            
-            btn.textContent = 'ยืนยันซื้อเลย';
-            btn.disabled = false;
+        window.buy = async (id, name, price) => {
+            if (!confirm(`ยืนยันการซื้อ ${name} ราคา ${price} ฿?`)) return;
+            const res = await fetch(`${API_BASE}/buy`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: activeUser, productId: id })
+            });
+            const data = await res.json();
+            if (data.success) { alert('สำเร็จ!'); init(); }
+            else alert(data.message);
         };
 
-        // ออกจากระบบ
         document.getElementById('logout-btn').onclick = () => {
             localStorage.removeItem('lastLoggedInUser');
             window.location.href = 'login.html';
         };
 
-        // เริ่มงาน
-        fetchUser();
-        fetchProducts();
+        init();
     </script>
-
-    <!-- บรรทัดสำคัญ: เอฟเฟกต์หิมะ -->
     <script src="snow.js"></script>
 </body>
-
 </html>
