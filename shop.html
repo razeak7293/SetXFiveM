@@ -10,8 +10,9 @@
         .snowflake{position:absolute;top:-10px;color:#fff;animation:fall linear infinite,sway ease-in-out infinite}
         @keyframes fall{0%{top:-10%}100%{top:110%}}
         @keyframes sway{0%,100%{transform:translateX(0)}50%{transform:translateX(50px)}}
-        .history-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:10000;align-items:center;justify-content:center}
+        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:10000;align-items:center;justify-content:center}
         .modal-box{background:#1a1b1e;padding:25px;border-radius:12px;width:90%;max-width:500px;border:1px solid #ff9900;max-height:80vh;overflow-y:auto}
+        .history-item{border-bottom:1px solid #333;padding:12px 0;display:flex;justify-content:space-between}
     </style>
 </head>
 <body>
@@ -19,24 +20,24 @@
         <div class="nav-container">
             <div class="logo">SET<span>SHOP</span></div>
             <div class="nav-right">
-                <span id="u-name">...</span> | <span id="u-bal" style="color:#4CAF50">0 S</span>
-                <button onclick="showHistory()" class="nav-btn">ประวัติ</button>
-                <button onclick="logout()" class="nav-btn">ออก</button>
+                <span id="u-name" style="color:#ff9900;font-weight:700">...</span> | 
+                <span id="u-bal" style="color:#4CAF50;font-weight:700">0 S</span>
+                <button onclick="showHistory()" class="nav-btn" style="border-color:#ff9900;color:#ff9900">ประวัติ</button>
+                <button onclick="logout()" class="nav-btn" style="border-color:#ff4d4f;color:#ff4d4f">ออก</button>
             </div>
         </div>
     </nav>
 
-    <div class="shop-container">
-        <h2 style="color:#ff9900">รายการสินค้า</h2>
+    <div class="shop-container" style="max-width:1200px;margin:30px auto;padding:0 20px;">
+        <h2 style="color:#ff9900;margin-bottom:20px;">รายการสินค้าแนะนำ</h2>
         <div id="p-grid" class="products-grid"></div>
     </div>
 
-    <!-- ประวัติ Modal -->
-    <div id="h-modal" class="history-modal">
+    <div id="h-modal" class="modal">
         <div class="modal-box">
-            <h2 style="color:#ff9900">ประวัติการซื้อ</h2>
-            <div id="h-list"></div>
-            <button onclick="document.getElementById('h-modal').style.display='none'" style="margin-top:20px;width:100%;padding:10px">ปิด</button>
+            <h2 style="color:#ff9900;border-bottom:1px solid #ff9900;padding-bottom:10px">ประวัติการสั่งซื้อ</h2>
+            <div id="h-list" style="margin-top:15px"></div>
+            <button onclick="document.getElementById('h-modal').style.display='none'" style="margin-top:20px;width:100%;padding:10px;background:#444;color:#fff;border:none;border-radius:4px;cursor:pointer">ปิดหน้าต่าง</button>
         </div>
     </div>
 
@@ -45,39 +46,42 @@
         if(!user) window.location.href='login.html';
         document.getElementById('u-name').textContent = user;
 
-        async function loadData() {
-            // โหลดเงิน
-            const uRes = await fetch('/api/users');
-            const users = await uRes.json();
-            const me = users.find(u => u.username === user);
-            if(me) document.getElementById('u-bal').textContent = me.balance + ' S';
+        async function syncData() {
+            try {
+                const uRes = await fetch('/api/users');
+                const users = await uRes.json();
+                const me = users.find(u => u.username.toLowerCase() === user.toLowerCase());
+                if(me) document.getElementById('u-bal').textContent = me.balance + ' S';
 
-            // โหลดสินค้า
-            const pRes = await fetch('/api/products');
-            const products = await pRes.json();
-            const grid = document.getElementById('p-grid');
-            grid.innerHTML = '';
-            products.forEach(p => {
-                grid.innerHTML += `
-                    <div class="product-card">
-                        <div class="product-info">
-                            <h3>${p.name}</h3>
-                            <p>ราคา ${p.price} ฿ | เหลือ ${p.stock}</p>
-                            <button onclick="buy('${p.id}')" class="buy-btn">ซื้อเลย</button>
-                        </div>
-                    </div>`;
-            });
+                const pRes = await fetch('/api/products');
+                const products = await pRes.json();
+                const grid = document.getElementById('p-grid');
+                grid.innerHTML = '';
+                products.forEach(p => {
+                    grid.innerHTML += `
+                        <div class="product-card">
+                            <div class="product-info">
+                                <h3 style="margin-bottom:10px">${p.name}</h3>
+                                <div style="display:flex;justify-content:space-between;align-items:center">
+                                    <span style="color:#ff9900;font-size:18px;font-weight:bold">${p.price} ฿</span>
+                                    <span style="font-size:12px;color:#888">คลัง: ${p.stock}</span>
+                                </div>
+                                <button onclick="buy('${p.id}', '${p.name}', ${p.price})" class="buy-btn" style="width:100%;margin-top:15px">ซื้อสินค้า</button>
+                            </div>
+                        </div>`;
+                });
+            } catch(e) { console.error(e); }
         }
 
-        async function buy(id) {
-            if(!confirm('ยืนยันซื้อ?')) return;
+        async function buy(id, name, price) {
+            if(!confirm(`ยืนยันการซื้อ ${name} (${price} ฿)?`)) return;
             const res = await fetch('/api/buy', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({username: user, productId: id})
             });
             const data = await res.json();
-            if(data.success) { alert('สำเร็จ!'); loadData(); }
+            if(data.success) { alert('สั่งซื้อสำเร็จแล้ว!'); syncData(); }
             else alert(data.message);
         }
 
@@ -85,17 +89,20 @@
             const res = await fetch('/api/orders/' + user);
             const history = await res.json();
             const list = document.getElementById('h-list');
-            list.innerHTML = history.length ? '' : 'ไม่มีประวัติ';
+            list.innerHTML = history.length ? '' : '<p style="color:#888;text-align:center">ยังไม่มีประวัติการซื้อ</p>';
             history.forEach(h => {
-                list.innerHTML += `<div style="border-bottom:1px solid #444;padding:10px">${h.itemName} - ${h.price} ฿ (${h.date})</div>`;
+                list.innerHTML += `
+                <div class="history-item">
+                    <div><strong>${h.itemName}</strong><br><small style="color:#888">${h.date}</small></div>
+                    <div style="color:#ff9900">${h.price} ฿</div>
+                </div>`;
             });
             document.getElementById('h-modal').style.display = 'flex';
         }
 
         function logout() { localStorage.clear(); window.location.href='login.html'; }
-        loadData();
+        syncData();
     </script>
     <script src="snow.js"></script>
 </body>
 </html>
-
