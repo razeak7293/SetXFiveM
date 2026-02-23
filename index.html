@@ -14,6 +14,7 @@
     <div class="background-wrapper">
         <div class="bg-blur"></div>
     </div>
+    
     <div class="signup-container">
         <h1 class="logo">Set shop</h1>
         <div class="signup-box">
@@ -25,7 +26,7 @@
                     <label>วันเกิด</label>
                     <div class="date-group">
                         <div class="select-wrapper">
-                            <select required>
+                            <select required id="birth-day">
                                 <option value="" disabled selected>วัน</option>
                                 <script>
                                     for (let i = 1; i <= 31; i++) document.write(`<option value="${i}">${i}</option>`);
@@ -33,7 +34,7 @@
                             </select>
                         </div>
                         <div class="select-wrapper">
-                            <select required>
+                            <select required id="birth-month">
                                 <option value="" disabled selected>เดือน</option>
                                 <option value="1">มกราคม</option>
                                 <option value="2">กุมภาพันธ์</option>
@@ -50,7 +51,7 @@
                             </select>
                         </div>
                         <div class="select-wrapper">
-                            <select required>
+                            <select required id="birth-year">
                                 <option value="" disabled selected>ปี</option>
                                 <script>
                                     const year = new Date().getFullYear();
@@ -64,13 +65,13 @@
                 <!-- ชื่อผู้ใช้ -->
                 <div class="form-group">
                     <label>ชื่อผู้ใช้</label>
-                    <input type="text" placeholder="อย่าใช้ชื่อจริงของคุณ" required>
+                    <input type="text" id="username" placeholder="อย่าใช้ชื่อจริงของคุณ" required>
                 </div>
 
                 <!-- รหัสผ่าน -->
                 <div class="form-group">
                     <label>รหัสผ่าน</label>
-                    <input type="password" placeholder="อย่างน้อย 8 อักขระ" required minlength="8">
+                    <input type="password" id="password" placeholder="อย่างน้อย 8 อักขระ" required minlength="8">
                 </div>
 
                 <!-- เพศ -->
@@ -79,7 +80,7 @@
                     <div class="gender-group">
                         <label class="gender-option">
                             <input type="radio" name="gender" value="female">
-                            <div class="gender-btn">
+                            <div class="gender-btn" title="หญิง">
                                 <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
                                     <rect x="10" y="2" width="4" height="4" rx="2" />
                                     <path d="M9 7h6l2.5 8h-2.5v7h-2v-5h-2v5H9v-7H6.5L9 7z" />
@@ -88,7 +89,7 @@
                         </label>
                         <label class="gender-option">
                             <input type="radio" name="gender" value="male">
-                            <div class="gender-btn">
+                            <div class="gender-btn" title="ชาย">
                                 <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
                                     <rect x="10" y="2" width="4" height="4" rx="2" />
                                     <path d="M7 7h10a1 1 0 0 1 1 1v6h-2v8h-3v-6h-2v6H8v-8H6V8a1 1 0 0 1 1-1z" />
@@ -102,10 +103,10 @@
                 <p class="terms">
                     การคลิกลงทะเบียนถือว่าคุณยอมรับข้อกำหนดการใช้งาน
                     และรับทราบนโยบายความเป็นส่วนตัวของเรา หากคุณมีอายุต่ำกว่า 18 ปี
-                    คุณยอมรับว่าพ่อแม่/ผู้ปกครองอนุญาตให้คุณสร้างบัญชีนี้และยอมรับข้อกำหนดการใช้งานของเรา
+                    คุณยอมรับว่าพ่อแม่/ผู้ปกครองอนุญาตให้คุณสร้างบัญชีนี้
                 </p>
 
-                <!-- Submit -->
+                <!-- Submit Button -->
                 <button type="submit" class="submit-btn" disabled>ลงทะเบียน</button>
 
                 <div style="text-align: center; margin-top: 24px; font-size: 13px; color: #ffffff; font-weight: 700;">
@@ -117,10 +118,10 @@
     </div>
 
     <script>
-        // เปลียนสถานะปุ่มเมื่อกรอกฟอร์มครบ
         const form = document.getElementById('signup-form');
         const submitBtn = document.querySelector('.submit-btn');
 
+        // ตรวจสอบความถูกต้องของฟอร์มแบบ Real-time
         form.addEventListener('input', () => {
             if (form.checkValidity()) {
                 submitBtn.removeAttribute('disabled');
@@ -129,13 +130,17 @@
             }
         });
 
-        // บันทึกข้อมูลเพื่อใช้ลงชื่อเข้าใช้ภายหลัง
+        // จัดการการส่งข้อมูลลงทะเบียน
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-            const usernameInput = form.querySelector('input[type="text"]');
-            const passwordInput = form.querySelector('input[type="password"]');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
 
             const API_BASE = "/api";
+
+            // กิ่งแสดง Loading
+            submitBtn.textContent = 'กำลังลงทะเบียน...';
+            submitBtn.disabled = true;
 
             fetch(`${API_BASE}/register`, {
                 method: 'POST',
@@ -145,21 +150,28 @@
                     password: passwordInput.value
                 })
             })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('ลงทะเบียนสำเร็จ!');
-                        window.location.href = 'login.html';
-                    } else {
-                        alert('ข้อผิดพลาด: ' + data.message);
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบว่าเซิร์ฟเวอร์ทำงานอยู่');
-                });
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('ลงทะเบียนสำเร็จ! กำลังไปหน้าล็อกอิน...');
+                    window.location.href = 'login.html';
+                } else {
+                    alert('ข้อผิดพลาด: ' + data.message);
+                    submitBtn.textContent = 'ลงทะเบียน';
+                    submitBtn.disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบสถานะ Render');
+                submitBtn.textContent = 'ลงทะเบียน';
+                submitBtn.disabled = false;
+            });
         });
     </script>
-        <script src="snow.js"></script>
-    </body>
+
+    <!-- เอฟเฟกต์หิมะ -->
+    <script src="snow.js"></script>
+</body>
+
 </html>
