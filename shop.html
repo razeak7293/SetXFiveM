@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Set Shop - หน้าร้าน</title>
+    <title>Set Shop - หน้าร้านค้า</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="shop-styles.css">
     <style>
-        #snow-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
-        .snowflake{position:absolute;top:-10px;color:#fff;animation:fall linear infinite,sway ease-in-out infinite}
-        @keyframes fall{0%{top:-10%}100%{top:110%}}
-        @keyframes sway{0%,100%{transform:translateX(0)}50%{transform:translateX(50px)}}
-        .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:10000;align-items:center;justify-content:center}
-        .modal-box{background:#1a1b1e;padding:25px;border-radius:12px;width:90%;max-width:500px;border:1px solid #ff9900;max-height:80vh;overflow-y:auto}
-        .history-item{border-bottom:1px solid #333;padding:12px 0;display:flex;justify-content:space-between}
+        /* สไตล์เสริมสำหรับหิมะ */
+        #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        .snowflake { position: absolute; top: -10px; color: #fff; user-select: none; z-index: 9999; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)); animation: fall linear infinite, sway ease-in-out infinite; }
+        @keyframes fall { 0% { top: -10%; } 100% { top: 110%; } }
+        @keyframes sway { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(50px); } }
     </style>
 </head>
 <body>
@@ -20,53 +19,112 @@
         <div class="nav-container">
             <div class="logo">SET<span>SHOP</span></div>
             <div class="nav-right">
-                <span id="u-name" style="color:#ff9900;font-weight:700">...</span> | 
-                <span id="u-bal" style="color:#4CAF50;font-weight:700">0 S</span>
-                <button onclick="showHistory()" class="nav-btn" style="border-color:#ff9900;color:#ff9900">ประวัติ</button>
-                <button onclick="logout()" class="nav-btn" style="border-color:#ff4d4f;color:#ff4d4f">ออก</button>
+                <span id="u-display" class="user-greeting">ผู้ใช้: ...</span>
+                <span id="u-balance" class="user-greeting" style="color: #4CAF50; font-weight: 700;">ยอดเงิน: 0 S</span>
+                <button onclick="showHistory()" class="nav-btn history-btn">ประวัติการซื้อ</button>
+                <button onclick="logout()" class="nav-btn logout-btn">ออกจากระบบ</button>
             </div>
         </div>
     </nav>
 
-    <div class="shop-container" style="max-width:1200px;margin:30px auto;padding:0 20px;">
-        <h2 style="color:#ff9900;margin-bottom:20px;">รายการสินค้าแนะนำ</h2>
-        <div id="p-grid" class="products-grid"></div>
-    </div>
+    <main class="shop-container">
+        <!-- ประกาศ (Announcement) -->
+        <section class="announcement-section">
+            <div class="announcement-card">
+                <div class="announcement-header">
+                    <div class="logo">SET<span>SHOP</span></div>
+                    <h3>ยินดีต้อนรับสู่ร้านค้าที่ดีที่สุด</h3>
+                </div>
+                <div class="announcement-body">
+                    <div class="rules-section">
+                        <h4>ข้อกำหนดและเงื่อนไข</h4>
+                        <ul>
+                            <li>เติมเงินผ่านระบบอัตโนมัติ 24 ชม.</li>
+                            <li>หากพบปัญหาการใช้งาน ติดต่อแอดมินทันที</li>
+                            <li>ห้ามใช้โปรแกรมโกงในการซื้อขาย</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <div id="h-modal" class="modal">
-        <div class="modal-box">
-            <h2 style="color:#ff9900;border-bottom:1px solid #ff9900;padding-bottom:10px">ประวัติการสั่งซื้อ</h2>
-            <div id="h-list" style="margin-top:15px"></div>
-            <button onclick="document.getElementById('h-modal').style.display='none'" style="margin-top:20px;width:100%;padding:10px;background:#444;color:#fff;border:none;border-radius:4px;cursor:pointer">ปิดหน้าต่าง</button>
+        <!-- ประวัติการซื้อล่าสุด (เลื่อนได้) -->
+        <section class="recent-orders-section">
+            <div class="section-header">
+                <h2 class="main-title"><span class="dot"></span> การซื้อล่าสุด</h2>
+            </div>
+            <div class="carousel-container">
+                <div class="carousel-track" id="recent-orders-track">
+                    <!-- รายการจะถูกโหลดด้วย JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- รายการสินค้า -->
+        <div class="section-header">
+            <h2 class="main-title"><span class="dot"></span> รายการสินค้าแนะนำ</h2>
+        </div>
+        <div class="products-grid" id="products-grid">
+            <div style="color: #888; text-align: center; grid-column: 1/-1; padding: 50px;">กำลังโหลดสินค้า...</div>
+        </div>
+    </main>
+
+    <!-- Modal ประวัติส่วนตัว -->
+    <div id="h-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:#1a1b1e; padding:25px; border-radius:12px; width:90%; max-width:500px; border:1px solid #ff9900;">
+            <h2 style="color:#ff9900; border-bottom:1px solid #ff9900; padding-bottom:10px; margin-bottom:15px">ประวัติการสั่งซื้อของคุณ</h2>
+            <div id="h-list" style="max-height:300px; overflow-y:auto"></div>
+            <button onclick="document.getElementById('h-modal').style.display='none'" style="margin-top:20px; width:100%; padding:10px; background:#444; color:white; border:none; border-radius:4px; cursor:pointer">ปิด</button>
         </div>
     </div>
 
     <script>
         const user = localStorage.getItem('lastLoggedInUser');
-        if(!user) window.location.href='login.html';
-        document.getElementById('u-name').textContent = user;
+        if(!user) window.location.href = 'login.html';
+        document.getElementById('u-display').textContent = `ผู้ใช้: ${user}`;
 
-        async function syncData() {
+        async function init() {
             try {
+                // โหลดข้อมูลยูเซอร์
                 const uRes = await fetch('/api/users');
                 const users = await uRes.json();
                 const me = users.find(u => u.username.toLowerCase() === user.toLowerCase());
-                if(me) document.getElementById('u-bal').textContent = me.balance + ' S';
+                if(me) document.getElementById('u-balance').textContent = `ยอดเงิน: ${me.balance} S`;
 
+                // โหลดสินค้า
                 const pRes = await fetch('/api/products');
                 const products = await pRes.json();
-                const grid = document.getElementById('p-grid');
+                const grid = document.getElementById('products-grid');
                 grid.innerHTML = '';
                 products.forEach(p => {
                     grid.innerHTML += `
                         <div class="product-card">
+                            <div class="product-image"><div class="img-placeholder">${p.name.substring(0,2)}</div></div>
                             <div class="product-info">
-                                <h3 style="margin-bottom:10px">${p.name}</h3>
-                                <div style="display:flex;justify-content:space-between;align-items:center">
-                                    <span style="color:#ff9900;font-size:18px;font-weight:bold">${p.price} ฿</span>
-                                    <span style="font-size:12px;color:#888">คลัง: ${p.stock}</span>
+                                <h3 class="product-name">${p.name}</h3>
+                                <div class="price-row">
+                                    <div class="price"><span class="amount">${p.price} ฿</span></div>
+                                    <button class="buy-btn" onclick="buy('${p.id}', '${p.name}', ${p.price})">ซื้อเลย</button>
                                 </div>
-                                <button onclick="buy('${p.id}', '${p.name}', ${p.price})" class="buy-btn" style="width:100%;margin-top:15px">ซื้อสินค้า</button>
+                                <div class="stock" style="margin-top:10px">เหลือ: <span>${p.stock}</span></div>
+                            </div>
+                        </div>`;
+                });
+
+                // โหลดการซื้อล่าสุด (Carousel)
+                const oRes = await fetch('/api/orders/all'); // ดึงการซื้อทั้งหมด
+                const allOrders = await oRes.json();
+                const track = document.getElementById('recent-orders-track');
+                track.innerHTML = '';
+                // ทำซ้ำเพื่อให้เลื่อนได้ไม่สิ้นสุด
+                const displayOrders = [...allOrders, ...allOrders];
+                displayOrders.forEach(o => {
+                    track.innerHTML += `
+                        <div class="carousel-item">
+                            <div class="c-info">
+                                <div class="c-name">${o.itemName}</div>
+                                <div class="c-date">${o.username} - ${o.date}</div>
+                                <div class="c-status">สำเร็จ</div>
                             </div>
                         </div>`;
                 });
@@ -74,14 +132,14 @@
         }
 
         async function buy(id, name, price) {
-            if(!confirm(`ยืนยันการซื้อ ${name} (${price} ฿)?`)) return;
+            if(!confirm(`ยืนยันการซื้อ ${name} ราคา ${price} ฿?`)) return;
             const res = await fetch('/api/buy', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({username: user, productId: id})
+                body: JSON.stringify({ username: user, productId: id })
             });
             const data = await res.json();
-            if(data.success) { alert('สั่งซื้อสำเร็จแล้ว!'); syncData(); }
+            if(data.success) { alert('สำเร็จ!'); init(); }
             else alert(data.message);
         }
 
@@ -89,19 +147,16 @@
             const res = await fetch('/api/orders/' + user);
             const history = await res.json();
             const list = document.getElementById('h-list');
-            list.innerHTML = history.length ? '' : '<p style="color:#888;text-align:center">ยังไม่มีประวัติการซื้อ</p>';
+            list.innerHTML = history.length ? '' : '<p style="color:#888; text-align:center">ไม่มีประวัติ</p>';
             history.forEach(h => {
-                list.innerHTML += `
-                <div class="history-item">
-                    <div><strong>${h.itemName}</strong><br><small style="color:#888">${h.date}</small></div>
-                    <div style="color:#ff9900">${h.price} ฿</div>
-                </div>`;
+                list.innerHTML += `<div style="border-bottom:1px solid #333; padding:10px; color:#fff"><strong>${h.itemName}</strong> - ${h.price} ฿<br><small style="color:#888">${h.date}</small></div>`;
             });
             document.getElementById('h-modal').style.display = 'flex';
         }
 
         function logout() { localStorage.clear(); window.location.href='login.html'; }
-        syncData();
+        
+        init();
     </script>
     <script src="snow.js"></script>
 </body>
