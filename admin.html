@@ -498,14 +498,26 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                const data = await res.json();
+
+                let data;
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    throw new Error(text || `Server error: ${res.status}`);
+                }
+
                 if (data.success) {
                     closeProductModal();
                     loadProductsData();
                     showAdminAlert('สำเร็จ', editingProductId ? 'อัปเดตข้อมูลสินค้าแล้ว' : 'เพิ่มสินค้าใหม่แล้ว');
+                } else {
+                    showAdminAlert('ผิดพลาด', data.message || 'บันทึกข้อมูลไม่สำเร็จ');
                 }
             } catch (err) {
-                showAdminAlert('ผิดพลาด', 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+                console.error('Save error:', err);
+                showAdminAlert('ผิดพลาด', 'เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + err.message);
             }
         }
     </script>
