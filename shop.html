@@ -222,9 +222,10 @@
                 grid.innerHTML = '';
 
                 allProducts.forEach(p => {
+                    const imgHtml = p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}">` : p.name.substring(0, 2);
                     grid.innerHTML += `
                         <div class="product-card" onclick="openDetailsModal('${p.id}')" style="cursor: pointer;">
-                            <div class="product-img-box">${p.name.substring(0, 2)}</div>
+                            <div class="product-img-box">${imgHtml}</div>
                             <div class="product-meta">
                                 <div class="p-name">${p.name}</div>
                                 <div style="color: #666; font-size: 13px; margin-bottom: 20px;">พร้อมส่ง 24 ชม.</div>
@@ -261,7 +262,9 @@
             document.getElementById('det-name').textContent = p.name;
             document.getElementById('det-price').textContent = `${p.price} ฿`;
             document.getElementById('det-desc').textContent = p.desc || 'ไม่มีคำอธิบายสินค้า';
-            document.getElementById('det-img').textContent = p.name.substring(0, 2);
+
+            const imgBox = document.getElementById('det-img');
+            imgBox.innerHTML = p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%; height:100%; object-fit:cover; border-radius:16px;">` : p.name.substring(0, 2);
 
             document.getElementById('det-buy-btn').onclick = () => {
                 closeAllModals();
@@ -360,5 +363,3 @@
 </body>
 
 </html>
-
-
