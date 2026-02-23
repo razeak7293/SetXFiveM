@@ -206,6 +206,16 @@ body {
     font-weight: 900;
     color: #1a1b1e;
     text-transform: uppercase;
+    padding: 15px;
+    /* Add space around image */
+}
+
+.product-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* Change from cover to contain */
+    border-radius: 12px;
 }
 
 .product-meta {
@@ -411,6 +421,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary);
 }
+
 
 
 
