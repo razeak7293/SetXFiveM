@@ -1,165 +1,135 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Set Shop - Premium Store</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set shop - ร้านค้าพรีเมียม</title>
     <link rel="stylesheet" href="shop-styles.css">
-    <style>
-        #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
-        .snowflake { position: absolute; top: -10px; color: #fff; animation: fall linear infinite, sway ease-in-out infinite; filter: drop-shadow(0 0 5px #ff9900); }
-        @keyframes fall { 0% { top: -10%; } 100% { top: 110%; } }
-        @keyframes sway { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(30px); } }
-        .carousel-track { display: flex; gap: 20px; width: max-content; animation: scroll 40s linear infinite; }
-        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-        .m-box { background: #1a1b1e; border: 1px solid #ff9900; padding: 30px; border-radius: 15px; width: 90%; max-width: 450px; }
-    </style>
 </head>
 <body>
     <nav class="shop-nav">
         <div class="nav-container">
             <div class="logo">SET<span>SHOP</span></div>
             <div class="nav-right">
-                <span id="u-name" style="color:#ff9900; font-weight:800">...</span>
-                <span id="u-bal" style="color:#4CAF50; background:rgba(76,175,80,0.1); padding:5px 15px; border-radius:20px; font-weight:bold">0 S</span>
-                <button onclick="showHistory()" class="nav-btn">ประวัติการซื้อ</button>
-                <button onclick="logout()" class="nav-btn logout-btn">ออก</button>
+                <span id="user-display" class="user-greeting">กำลังโหลด...</span>
+                <span id="user-balance" class="nav-btn" style="color:#00ff88; border-color:rgba(0,255,136,0.2);">ยอดเงิน: 0 S</span>
+                <button id="history-btn" class="nav-btn history-btn">ประวัติการซื้อ</button>
+                <button id="logout-btn" class="nav-btn logout-btn">ออกจากระบบ</button>
             </div>
         </div>
     </nav>
 
     <main class="shop-container">
-        <!-- ประกาศเนื้อหาตามรูปเป๊ะ -->
-        <section class="announcement-section">
-            <div class="announcement-card" style="border: 2px solid #ff9900; text-align: center; position: relative;">
-                <h2 style="color:#ff9900; margin-bottom:5px">ประกาศจากทางร้าน</h2>
-                <div style="font-size:12px; color:#666; margin-bottom:15px">เรื่อง เงื่อนไขการให้บริการ</div>
-                <div style="text-align:left; font-size:14px; color:#ddd; line-height:1.8">
-                    • ซื้อสินค้าแล้วไม่สามารถคืนเงินได้ทุกกรณี<br>
-                    • หากเกิดปัญหาจากตัวผู้ใช้เอง ทางร้านไม่รับผิดชอบ<br>
-                    • หากโกงหรือใช้สลิปปลอม จะทำการ Blacklist ทันที<br>
-                    <span style="color:#ff4d4f">⚠️ • การใช้โปรมีความเสี่ยง โปรดยอมรับความเสี่ยงด้วยตนเอง</span>
-                </div>
-                <div style="position:absolute; bottom:10px; right:20px; font-size:10px; color:#444">6 ก.พ. 2026</div>
-            </div>
-        </section>
-
-        <!-- การซื้อล่าสุด -->
-        <h3 style="color:#ff9900; margin-bottom:15px">● การซื้อล่าสุด</h3>
-        <div style="background:#111; border-radius:10px; overflow:hidden; padding:15px; margin-bottom:30px">
-            <div class="carousel-track" id="recent-track"></div>
+        <!-- รายการสั่งซื้อล่าสุด -->
+        <div class="carousel-container">
+            <div class="carousel-track" id="carousel-track"></div>
         </div>
 
-        <!-- รายการสินค้า -->
-        <h3 style="color:#ff9900; margin-bottom:15px">● รายการสินค้าแนะนำ</h3>
-        <div class="products-grid" id="p-grid"></div>
+        <div class="section-header">
+            <h2 class="main-title"><span class="dot"></span> สินค้าแนะนำ</h2>
+        </div>
+
+        <div class="products-grid" id="products-grid"></div>
     </main>
 
-    <!-- Modal จัดเต็ม -->
-    <div id="buy-m" class="overlay">
-        <div class="m-box">
-            <h2 id="m-t" style="color:#ff9900; margin-bottom:15px"></h2>
-            <p id="m-d" style="color:#888; margin-bottom:20px; font-size:14px"></p>
-            <div style="background:#222; padding:15px; border-radius:10px; margin-bottom:20px">
-                <div style="display:flex; justify-content:space-between">
-                    <span>ราคา: <b id="m-p" style="color:#ff9900"></b> ฿</span>
-                    <span>คงเหลือ: <b id="m-s"></b></span>
-                </div>
+    <!-- Modal ประวัติการซื้อ -->
+    <div id="history-modal" class="modal">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 style="color:#ff9900;">ประวัติการสั่งซื้อ</h2>
+                <span onclick="document.getElementById('history-modal').style.display='none'" style="cursor:pointer; font-size:24px;">&times;</span>
             </div>
-            <div style="display:flex; gap:10px">
-                <button onclick="closeM()" style="flex:1; padding:12px; background:#444; color:#fff; border:none; border-radius:5px; cursor:pointer">ยกเลิก</button>
-                <button id="confirm-btn" style="flex:1; padding:12px; background:#ff9900; color:#000; font-weight:bold; border:none; border-radius:5px; cursor:pointer">ยืนยันการซื้อ</button>
-            </div>
+            <div id="history-list"></div>
         </div>
     </div>
 
     <script>
-        const user = localStorage.getItem('lastLoggedInUser');
-        if(!user) window.location.href = 'login.html';
-        document.getElementById('u-name').textContent = `ผู้ใช้: ${user}`;
+        const API_BASE = "/api";
+        const activeUser = localStorage.getItem('lastLoggedInUser');
+
+        if (!activeUser) window.location.href = 'login.html';
+        document.getElementById('user-display').textContent = `ผู้ใช้: ${activeUser}`;
 
         async function init() {
             try {
-                // ข้อมูลยูเซอร์
-                const uRes = await fetch('/api/users');
-                const users = await uRes.json();
-                const me = users.find(u => u.username.toLowerCase() === user.toLowerCase());
-                if(me) document.getElementById('u-bal').textContent = `${me.balance} S`;
-
-                // สินค้า
-                const pRes = await fetch('/api/products');
+                // โหลดสินค้า
+                const pRes = await fetch(`${API_BASE}/products`);
                 const products = await pRes.json();
-                const grid = document.getElementById('p-grid');
+                const grid = document.getElementById('products-grid');
                 grid.innerHTML = '';
                 products.forEach(p => {
                     grid.innerHTML += `
-                    <div class="product-card">
-                        <div class="product-image"><div class="img-placeholder">${p.name.substring(0,2)}</div></div>
-                        <div class="product-info">
-                            <h3 style="margin-bottom:15px; height:40px; overflow:hidden">${p.name}</h3>
-                            <div style="display:flex; justify-content:space-between; align-items:center">
-                                <span style="color:#ff9900; font-size:18px; font-weight:bold">${p.price} ฿</span>
-                                <button class="buy-btn" onclick="openM('${p.id}','${p.name}',${p.price},'${p.desc||'คุณภาพดีเยี่ยม การันตีการใช้งาน'}',${p.stock})">ซื้อเลย</button>
+                        <div class="product-card">
+                            <div class="product-image"><div class="img-placeholder">${p.name.substring(0,2)}</div></div>
+                            <div class="product-info">
+                                <h3 class="product-name">${p.name}</h3>
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span style="color:#ff9900; font-weight:900; font-size:20px;">${p.price} ฿</span>
+                                    <button class="buy-btn" onclick="buy('${p.id}', '${p.name}', ${p.price})">ซื้อเลย</button>
+                                </div>
                             </div>
-                            <div style="font-size:11px; color:#555; margin-top:10px">คลังคงเหลือ: ${p.stock}</div>
-                        </div>
+                        </div>`;
+                });
+
+                // โหลดเงิน
+                const uRes = await fetch(`${API_BASE}/users`);
+                const users = await uRes.json();
+                const me = users.find(u => u.username === activeUser);
+                if(me) document.getElementById('user-balance').textContent = `ยอดเงิน: ${me.balance} S`;
+
+                // โหลด Carousel
+                const oRes = await fetch(`${API_BASE}/orders/all`);
+                const orders = await oRes.json();
+                const track = document.getElementById('carousel-track');
+                track.innerHTML = '';
+                [...orders, ...orders].forEach(o => {
+                    track.innerHTML += `<div class="history-item" style="min-width:250px; margin:0 10px;">
+                        <span style="color:#ff9900; font-weight:bold;">${o.itemName}</span>
+                        <span style="font-size:10px; color:#4CAF50;">ขายแล้ว!</span>
                     </div>`;
                 });
-
-                // การซื้อล่าสุด
-                const oRes = await fetch('/api/orders/all');
-                const orders = await oRes.json();
-                const track = document.getElementById('recent-track');
-                const list = orders.length > 0 ? [...orders, ...orders, ...orders] : [{itemName:'ยินดีต้อนรับสู่ Set Shop', username:'System', date:''}];
-                track.innerHTML = list.map(o => `
-                    <div style="background:#1a1b1e; padding:10px 20px; border-radius:8px; border:1px solid #333; min-width:200px">
-                        <div style="color:#ff9900; font-weight:bold; font-size:13px">${o.itemName}</div>
-                        <div style="color:#666; font-size:11px">${o.username} | ${o.date}</div>
-                    </div>
-                `).join('');
-
-            } catch(e) { console.error("Load Error:", e); }
+            } catch (err) { console.error(err); }
         }
 
-        function openM(id, n, p, d, s) {
-            document.getElementById('m-t').textContent = n;
-            document.getElementById('m-d').textContent = d;
-            document.getElementById('m-p').textContent = p;
-            document.getElementById('m-s').textContent = s;
-            document.getElementById('buy-m').style.display = 'flex';
-            document.getElementById('confirm-btn').onclick = () => buy(id);
+        async function buy(id, name, price) {
+            if (!confirm(`ยืนยันการซื้อ ${name}?`)) return;
+            const res = await fetch(`${API_BASE}/buy`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: activeUser, productId: id })
+            });
+            const data = await res.json();
+            if (data.success) { alert('สำเร็จ!'); init(); }
+            else alert(data.message);
         }
 
-        async function buy(id) {
-            const btn = document.getElementById('confirm-btn');
-            btn.disabled = true; btn.textContent = 'กำลังดำเนินการ...';
-            try {
-                const res = await fetch('/api/buy', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({username: user, productId: id})
-                });
-                const data = await res.json();
-                if(data.success) { alert('ซื้อสำเร็จ! ดูประวัติเพื่อรับสินค้า'); closeM(); init(); }
-                else alert(data.message);
-            } catch(e) { alert('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้'); }
-            btn.disabled = false; btn.textContent = 'ยืนยันการซื้อ';
-        }
-
-        function closeM() { document.getElementById('buy-m').style.display = 'none'; }
-        function logout() { localStorage.clear(); window.location.href='login.html'; }
-        
-        async function showHistory() {
-            const res = await fetch('/api/orders/' + user);
+        document.getElementById('history-btn').onclick = async () => {
+            const res = await fetch(`${API_BASE}/orders/${activeUser}`);
             const history = await res.json();
-            alert("ประวัติการซื้อ:\n" + history.map(h => `- ${h.itemName} (${h.price}฿) เมื่อ ${h.date}`).join("\n") || "ยังไม่มีประวัติ");
-        }
+            const list = document.getElementById('history-list');
+            list.innerHTML = history.length ? '' : '<p style="text-align:center;">ไม่มีประวัติ</p>';
+            history.reverse().forEach(h => {
+                list.innerHTML += `
+                    <div class="history-item">
+                        <div>
+                            <div style="font-weight:800;">${h.itemName}</div>
+                            <div style="font-size:11px; color:#555;">${h.date}</div>
+                        </div>
+                        <div style="color:#ff9900; font-weight:900;">${h.price} ฿</div>
+                    </div>`;
+            });
+            document.getElementById('history-modal').style.display = 'flex';
+        };
+
+        document.getElementById('logout-btn').onclick = () => {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        };
 
         init();
     </script>
-    <script src="snow.js"></script>
 </body>
 </html>
+
 
 
