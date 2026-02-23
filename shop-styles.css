@@ -1,52 +1,359 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap');
 
 :root {
     --primary: #ff9900;
-    --primary-glow: rgba(255, 153, 0, 0.4);
-    --secondary: #ffcc00;
-    --bg-dark: #0a0b0d;
-    --card-bg: rgba(26, 27, 30, 0.7);
-    --glass-bg: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.05);
-    --text-main: #ffffff;
-    --text-muted: #a0a0a0;
-    --success: #00ff88;
-    --danger: #ff4d4f;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --primary-bright: #ffb84d;
+    --bg-main: #0a0b0d;
+    --bg-card: rgba(22, 24, 28, 0.8);
+    --border-glass: rgba(255, 255, 255, 0.08);
+    --text-white: #ffffff;
+    --text-dim: #9ca3af;
+    --accent-green: #00ff88;
+    --accent-red: #ff4d4f;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+}
 
 body {
-    font-family: 'Noto Sans Thai', sans-serif;
-    color: var(--text-main);
-    background-color: var(--bg-dark);
-    background-image: radial-gradient(circle at 20% 20%, rgba(255, 153, 0, 0.05) 0%, transparent 40%), radial-gradient(circle at 80% 80%, rgba(255, 153, 0, 0.05) 0%, transparent 40%);
+    font-family: 'Noto Sans Thai', 'Outfit', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-white);
     min-height: 100vh;
     overflow-x: hidden;
+    background-image:
+        radial-gradient(circle at 0% 0%, rgba(255, 153, 0, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(255, 153, 0, 0.03) 0%, transparent 50%);
 }
 
-/* Nav & UI Components */
-.shop-nav { background: rgba(10, 11, 13, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); padding: 12px 0; position: sticky; top: 0; z-index: 1000; }
-.nav-container { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
-.logo { font-size: 26px; font-weight: 900; text-transform: uppercase; }
-.logo span { color: var(--primary); text-shadow: 0 0 15px var(--primary-glow); }
+/* --- Navigation Bar --- */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(10, 11, 13, 0.8);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid var(--border-glass);
+    padding: 16px 0;
+}
 
-/* Buttons */
-.nav-btn { background: var(--glass-bg); color: var(--text-main); border: 1px solid var(--glass-border); padding: 10px 18px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 8px; }
-.nav-btn:hover { background: var(--glass-border); transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.2); }
-.history-btn { color: var(--primary); border-color: rgba(255, 153, 0, 0.3); }
-.topup-btn { background: linear-gradient(135deg, #00ff88, #00cc6a); color: #000 !important; border: none !important; }
+.nav-content {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-/* Product Cards */
-.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
-.product-card { background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 20px; overflow: hidden; transition: var(--transition); position: relative; }
-.product-card:hover { transform: translateY(-8px); border-color: rgba(255, 153, 0, 0.3); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); }
+.nav-logo {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
 
-/* History Items */
-.history-item { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--glass-border); padding: 20px; border-radius: 18px; margin-bottom: 16px; transition: var(--transition); color: #fff; }
-.history-item:hover { border-color: rgba(255, 153, 0, 0.2); background: rgba(255, 255, 255, 0.03); }
+.nav-logo span {
+    color: var(--primary);
+    text-shadow: 0 0 15px rgba(255, 153, 0, 0.3);
+}
 
-/* Animation */
-.carousel-track { display: flex; gap: 20px; animation: scroll 60s linear infinite; padding: 0 20px; }
-@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-base {
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border-glass);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-white);
+}
+
+.btn-base:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #000;
+    border: none;
+    box-shadow: 0 4px 15px rgba(255, 153, 0, 0.2);
+}
+
+.btn-primary:hover {
+    background: var(--primary-bright);
+    box-shadow: 0 6px 20px rgba(255, 153, 0, 0.3);
+}
+
+.btn-outline-primary {
+    color: var(--primary);
+    border-color: rgba(255, 153, 0, 0.3);
+}
+
+.btn-outline-danger {
+    color: var(--accent-red);
+    border-color: rgba(255, 77, 79, 0.2);
+}
+
+/* --- Hero Section --- */
+.shop-hero {
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 0 24px;
+}
+
+.carousel-box {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    padding: 20px 0;
+    overflow: hidden;
+    margin-bottom: 40px;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 20px;
+    animation: scroll 60s linear infinite;
+    width: max-content;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.order-tag {
+    background: var(--bg-card);
+    padding: 12px 20px;
+    border-radius: 16px;
+    border: 1px solid var(--border-glass);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 250px;
+}
+
+/* --- Product Section --- */
+.section-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-title::before {
+    content: '';
+    width: 6px;
+    height: 24px;
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.product-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-glass);
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(255, 153, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.product-img-box {
+    width: 100%;
+    height: 200px;
+    background: #121316;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 900;
+    color: #1a1b1e;
+    text-transform: uppercase;
+}
+
+.product-meta {
+    padding: 24px;
+    flex: 1;
+}
+
+.p-name {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #fff;
+}
+
+.p-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.p-price {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--primary);
+}
+
+/* --- Announcement Section --- */
+.announcement-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-glass);
+    border-radius: 24px;
+    padding: 35px;
+    margin-bottom: 40px;
+    transition: var(--transition);
+}
+
+.announcement-card:hover {
+    border-color: rgba(255, 153, 0, 0.2);
+}
+
+.announcement-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.announcement-title {
+    color: var(--primary);
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.announcement-list {
+    list-style: none;
+}
+
+.announcement-list li {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+    line-height: 1.5;
+}
+
+.announcement-list li::before {
+    content: '•';
+    color: var(--primary);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+.discord-box {
+    background: rgba(88, 101, 242, 0.1);
+    border: 1px solid rgba(88, 101, 242, 0.2);
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-box {
+    background: #111214;
+    border: 1px solid var(--border-glass);
+    border-radius: 32px;
+    width: 90%;
+    max-width: 550px;
+    padding: 32px;
+    max-height: 85vh;
+    animation: popIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.history-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-glass);
+    padding: 16px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-card:hover {
+    border-color: rgba(255, 153, 0, 0.2);
+}
+
+/* Scrollbar Fix */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
