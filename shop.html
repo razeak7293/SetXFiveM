@@ -1,26 +1,19 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Set Shop - หน้าร้านค้า</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Shop - Premium Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="shop-styles.css">
     <style>
-        /* สไตล์เสริมสำหรับหิมะและ Carousel */
         #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
-        .snowflake { position: absolute; top: -10px; color: #fff; user-select: none; z-index: 9999; filter: drop-shadow(0 0 5px rgba(255,153,0,0.4)); animation: fall linear infinite, sway ease-in-out infinite; }
+        .snowflake { position: absolute; top: -10px; color: #fff; animation: fall linear infinite, sway ease-in-out infinite; filter: drop-shadow(0 0 5px #ff9900); }
         @keyframes fall { 0% { top: -10%; } 100% { top: 110%; } }
-        @keyframes sway { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(50px); } }
-        
-        /* แก้ไข Carousel ให้แสดงผล */
-        .carousel-track { display: flex; gap: 15px; width: max-content; animation: scroll 30s linear infinite; padding: 10px 0; }
+        @keyframes sway { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(30px); } }
+        .carousel-track { display: flex; gap: 20px; width: max-content; animation: scroll 40s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .carousel-item { background: #1a1b1e; border: 1px solid #333; padding: 10px 15px; border-radius: 8px; min-width: 250px; }
-        
-        /* Modal สไตล์ */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal-box { background: #1a1b1e; border: 1px solid #ff9900; border-radius: 12px; width: 90%; max-width: 500px; padding: 25px; position: relative; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .m-box { background: #1a1b1e; border: 1px solid #ff9900; padding: 30px; border-radius: 15px; width: 90%; max-width: 450px; }
     </style>
 </head>
 <body>
@@ -28,162 +21,145 @@
         <div class="nav-container">
             <div class="logo">SET<span>SHOP</span></div>
             <div class="nav-right">
-                <span id="u-display" class="user-greeting">ผู้ใช้: ...</span>
-                <span id="u-balance" class="user-greeting" style="color: #4CAF50; font-weight: 700; background: rgba(76,175,80,0.1); padding: 5px 12px; border-radius: 6px;">ยอดเงิน: 0 S</span>
-                <button onclick="showHistory()" class="nav-btn history-btn">ประวัติการซื้อ</button>
-                <button onclick="logout()" class="nav-btn logout-btn">ออกจากระบบ</button>
+                <span id="u-name" style="color:#ff9900; font-weight:800">...</span>
+                <span id="u-bal" style="color:#4CAF50; background:rgba(76,175,80,0.1); padding:5px 15px; border-radius:20px; font-weight:bold">0 S</span>
+                <button onclick="showHistory()" class="nav-btn">ประวัติการซื้อ</button>
+                <button onclick="logout()" class="nav-btn logout-btn">ออก</button>
             </div>
         </div>
     </nav>
 
     <main class="shop-container">
-        <!-- ประกาศ (Announcement) -->
+        <!-- ประกาศเนื้อหาตามรูปเป๊ะ -->
         <section class="announcement-section">
-            <div class="announcement-card" style="border: 2px solid #ff9900; position: relative; overflow: hidden;">
-                <div style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 15px;">
-                    <h2 style="color: #ff9900;">ประกาศจากทางร้าน</h2>
-                    <p style="color: #bbb;">เรื่อง เงื่อนไขการให้บริการ</p>
+            <div class="announcement-card" style="border: 2px solid #ff9900; text-align: center; position: relative;">
+                <h2 style="color:#ff9900; margin-bottom:5px">ประกาศจากทางร้าน</h2>
+                <div style="font-size:12px; color:#666; margin-bottom:15px">เรื่อง เงื่อนไขการให้บริการ</div>
+                <div style="text-align:left; font-size:14px; color:#ddd; line-height:1.8">
+                    • ซื้อสินค้าแล้วไม่สามารถคืนเงินได้ทุกกรณี<br>
+                    • หากเกิดปัญหาจากตัวผู้ใช้เอง ทางร้านไม่รับผิดชอบ<br>
+                    • หากโกงหรือใช้สลิปปลอม จะทำการ Blacklist ทันที<br>
+                    <span style="color:#ff4d4f">⚠️ • การใช้โปรมีความเสี่ยง โปรดยอมรับความเสี่ยงด้วยตนเอง</span>
                 </div>
-                <div style="padding: 15px 0; font-size: 14px; color: #eee;">
-                    <p>• ซื้อแล้วไม่สามารถขอคืนเงินได้ทุกกรณี</p>
-                    <p>• หากปัญหาเกิดจากผู้ใช้เอง ทางร้านไม่รับผิดชอบ</p>
-                    <p>• หากโกงหรือใช้สลิปปลอม จะทำการ Blacklist ทันที</p>
-                    <p>⚠️ • การใช้โปรมีความเสี่ยง โปรดยอมรับความเสี่ยงด้วยตนเอง</p>
-                </div>
-                <div style="text-align: right; font-size: 11px; color: #666;">ประกาศวันที่ 6 ก.พ. 2026</div>
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 60px; color: rgba(255,255,255,0.02); pointer-events: none;">Set Shop</div>
+                <div style="position:absolute; bottom:10px; right:20px; font-size:10px; color:#444">6 ก.พ. 2026</div>
             </div>
         </section>
 
-        <!-- การซื้อล่าสุด (Carousel) -->
-        <section class="recent-orders-section">
-            <div class="section-header">
-                <h2 class="main-title"><span class="dot"></span> การซื้อล่าสุด</h2>
-            </div>
-            <div class="carousel-container" style="background: #111; border-radius: 10px; overflow: hidden; height: 80px;">
-                <div class="carousel-track" id="recent-orders-track">
-                    <!-- รายการจะถูกโหลดด้วย JS -->
-                </div>
-            </div>
-        </section>
+        <!-- การซื้อล่าสุด -->
+        <h3 style="color:#ff9900; margin-bottom:15px">● การซื้อล่าสุด</h3>
+        <div style="background:#111; border-radius:10px; overflow:hidden; padding:15px; margin-bottom:30px">
+            <div class="carousel-track" id="recent-track"></div>
+        </div>
 
         <!-- รายการสินค้า -->
-        <div class="section-header" style="margin-top: 30px;">
-            <h2 class="main-title"><span class="dot"></span> รายการสินค้าแนะนำ</h2>
-        </div>
-        <div class="products-grid" id="products-grid">
-            <!-- สินค้าโหลดที่นี่ -->
-        </div>
+        <h3 style="color:#ff9900; margin-bottom:15px">● รายการสินค้าแนะนำ</h3>
+        <div class="products-grid" id="p-grid"></div>
     </main>
 
-    <!-- Modal ยืนยันการซื้อและรายละเอียด -->
-    <div id="buy-modal" class="modal-overlay">
-        <div class="modal-box">
-            <h2 id="m-title" style="color: #ff9900; margin-bottom: 10px;">ชื่อสินค้า</h2>
-            <p id="m-desc" style="color: #bbb; margin-bottom: 20px; font-size: 14px;">รายละเอียดสินค้า...</p>
-            <div style="background: #222; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                <p style="color: #fff;">ราคา: <span id="m-price" style="color: #ff9900; font-weight: 700;">0</span> ฿</p>
-                <p id="m-stock" style="color: #888; font-size: 12px; margin-top: 5px;">คงเหลือ: 0</p>
+    <!-- Modal จัดเต็ม -->
+    <div id="buy-m" class="overlay">
+        <div class="m-box">
+            <h2 id="m-t" style="color:#ff9900; margin-bottom:15px"></h2>
+            <p id="m-d" style="color:#888; margin-bottom:20px; font-size:14px"></p>
+            <div style="background:#222; padding:15px; border-radius:10px; margin-bottom:20px">
+                <div style="display:flex; justify-content:space-between">
+                    <span>ราคา: <b id="m-p" style="color:#ff9900"></b> ฿</span>
+                    <span>คงเหลือ: <b id="m-s"></b></span>
+                </div>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="closeModal('buy-modal')" style="flex: 1; padding: 12px; background: #333; color: #fff; border: none; border-radius: 6px; cursor: pointer;">ยกเลิก</button>
-                <button id="m-confirm-btn" style="flex: 1; padding: 12px; background: #ff9900; color: #111; border: none; border-radius: 6px; font-weight: 700; cursor: pointer;">ยืนยันการซื้อ</button>
+            <div style="display:flex; gap:10px">
+                <button onclick="closeM()" style="flex:1; padding:12px; background:#444; color:#fff; border:none; border-radius:5px; cursor:pointer">ยกเลิก</button>
+                <button id="confirm-btn" style="flex:1; padding:12px; background:#ff9900; color:#000; font-weight:bold; border:none; border-radius:5px; cursor:pointer">ยืนยันการซื้อ</button>
             </div>
-        </div>
-    </div>
-
-    <!-- Modal ประวัติส่วนตัว -->
-    <div id="h-modal" class="modal-overlay">
-        <div class="modal-box" style="max-width: 600px;">
-            <h2 style="color: #ff9900; border-bottom: 1px solid #ff9900; padding-bottom: 10px; margin-bottom: 15px;">ประวัติการสั่งซื้อของคุณ</h2>
-            <div id="h-list" style="max-height: 400px; overflow-y: auto;"></div>
-            <button onclick="closeModal('h-modal')" style="margin-top: 20px; width: 100%; padding: 12px; background: #444; color: #fff; border: none; border-radius: 6px; cursor: pointer;">ปิดหน้าต่าง</button>
         </div>
     </div>
 
     <script>
         const user = localStorage.getItem('lastLoggedInUser');
         if(!user) window.location.href = 'login.html';
-        document.getElementById('u-display').textContent = `ผู้ใช้: ${user}`;
+        document.getElementById('u-name').textContent = `ผู้ใช้: ${user}`;
 
         async function init() {
             try {
-                // โหลดเงินยูเซอร์
+                // ข้อมูลยูเซอร์
                 const uRes = await fetch('/api/users');
                 const users = await uRes.json();
                 const me = users.find(u => u.username.toLowerCase() === user.toLowerCase());
-                if(me) document.getElementById('u-balance').textContent = `ยอดเงิน: ${me.balance} S`;
+                if(me) document.getElementById('u-bal').textContent = `${me.balance} S`;
 
-                // โหลดสินค้า
+                // สินค้า
                 const pRes = await fetch('/api/products');
                 const products = await pRes.json();
-                const grid = document.getElementById('products-grid');
+                const grid = document.getElementById('p-grid');
                 grid.innerHTML = '';
                 products.forEach(p => {
                     grid.innerHTML += `
-                        <div class="product-card">
-                            <div class="product-image"><div class="img-placeholder">${p.name.substring(0,2)}</div></div>
-                            <div class="product-info">
-                                <h3 class="product-name">${p.name}</h3>
-                                <div class="price-row">
-                                    <div class="price"><span class="amount">${p.price} ฿</span></div>
-                                    <button class="buy-btn" onclick="openBuyModal('${p.id}', '${p.name}', ${p.price}, '${p.desc || 'ไม่มีรายละเอียด'}', ${p.stock})">ซื้อเลย</button>
-                                </div>
-                                <div class="stock" style="margin-top:10px; font-size:11px; color:#666;">คลัง: <span>${p.stock}</span></div>
+                    <div class="product-card">
+                        <div class="product-image"><div class="img-placeholder">${p.name.substring(0,2)}</div></div>
+                        <div class="product-info">
+                            <h3 style="margin-bottom:15px; height:40px; overflow:hidden">${p.name}</h3>
+                            <div style="display:flex; justify-content:space-between; align-items:center">
+                                <span style="color:#ff9900; font-size:18px; font-weight:bold">${p.price} ฿</span>
+                                <button class="buy-btn" onclick="openM('${p.id}','${p.name}',${p.price},'${p.desc||'คุณภาพดีเยี่ยม การันตีการใช้งาน'}',${p.stock})">ซื้อเลย</button>
                             </div>
-                        </div>`;
+                            <div style="font-size:11px; color:#555; margin-top:10px">คลังคงเหลือ: ${p.stock}</div>
+                        </div>
+                    </div>`;
                 });
 
-                // โหลด Carousel การซื้อล่าสุด
+                // การซื้อล่าสุด
                 const oRes = await fetch('/api/orders/all');
-                const allOrders = await oRes.json();
-                const track = document.getElementById('recent-orders-track');
-                track.innerHTML = '';
-                
-                // ถ้ามีข้อมูลน้อย ให้ทำซ้ำเพื่อให้เลื่อนได้สวยๆ
-                const list = allOrders.length > 0 ? [...allOrders, ...allOrders, ...allOrders] : [];
-                list.forEach(o => {
-                    track.innerHTML += `
-                        <div class="carousel-item">
-                            <div style="color:#ff9900; font-weight:700; font-size:13px;">${o.itemName}</div>
-                            <div style="color:#888; font-size:11px;">โดยคุณ ${o.username} เมื่อ ${o.date.split(' ')[1]}</div>
-                        </div>`;
+                const orders = await oRes.json();
+                const track = document.getElementById('recent-track');
+                const list = orders.length > 0 ? [...orders, ...orders, ...orders] : [{itemName:'ยินดีต้อนรับสู่ Set Shop', username:'System', date:''}];
+                track.innerHTML = list.map(o => `
+                    <div style="background:#1a1b1e; padding:10px 20px; border-radius:8px; border:1px solid #333; min-width:200px">
+                        <div style="color:#ff9900; font-weight:bold; font-size:13px">${o.itemName}</div>
+                        <div style="color:#666; font-size:11px">${o.username} | ${o.date}</div>
+                    </div>
+                `).join('');
+
+            } catch(e) { console.error("Load Error:", e); }
+        }
+
+        function openM(id, n, p, d, s) {
+            document.getElementById('m-t').textContent = n;
+            document.getElementById('m-d').textContent = d;
+            document.getElementById('m-p').textContent = p;
+            document.getElementById('m-s').textContent = s;
+            document.getElementById('buy-m').style.display = 'flex';
+            document.getElementById('confirm-btn').onclick = () => buy(id);
+        }
+
+        async function buy(id) {
+            const btn = document.getElementById('confirm-btn');
+            btn.disabled = true; btn.textContent = 'กำลังดำเนินการ...';
+            try {
+                const res = await fetch('/api/buy', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username: user, productId: id})
                 });
-            } catch(e) { console.error('Init Error:', e); }
+                const data = await res.json();
+                if(data.success) { alert('ซื้อสำเร็จ! ดูประวัติเพื่อรับสินค้า'); closeM(); init(); }
+                else alert(data.message);
+            } catch(e) { alert('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้'); }
+            btn.disabled = false; btn.textContent = 'ยืนยันการซื้อ';
         }
 
-        let selectedId = null;
-        function openBuyModal(id, name, price, desc, stock) {
-            selectedId = id;
-            document.getElementById('m-title').textContent = name;
-            document.getElementById('m-desc').textContent = desc;
-            document.getElementById('m-price').textContent = price;
-            document.getElementById('m-stock').textContent = `คงเหลือ: ${stock} ชิ้น`;
-            document.getElementById('buy-modal').style.display = 'flex';
-            
-            document.getElementById('m-confirm-btn').onclick = async () => {
-                const btn = document.getElementById('m-confirm-btn');
-                btn.disabled = true; btn.textContent = 'กำลังซื้อ...';
-                
-                try {
-                    const res = await fetch('/api/buy', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ username: user, productId: id })
-                    });
-                    const data = await res.json();
-                    if(data.success) {
-                        alert('ซื้อสำเร็จแล้ว! ตรวจสอบประวัติเพื่อรับสินค้า');
-                        closeModal('buy-modal');
-                        init();
-                    } else alert(data.message);
-                } catch(e) { alert('การเชื่อมต่อผิดพลาด'); }
-                
-                btn.disabled = false; btn.textContent = 'ยืนยันการซื้อ';
-            };
-        }
-
+        function closeM() { document.getElementById('buy-m').style.display = 'none'; }
+        function logout() { localStorage.clear(); window.location.href='login.html'; }
+        
         async function showHistory() {
             const res = await fetch('/api/orders/' + user);
             const history = await res.json();
-            const list = document.getElementById('
+            alert("ประวัติการซื้อ:\n" + history.map(h => `- ${h.itemName} (${h.price}฿) เมื่อ ${h.date}`).join("\n") || "ยังไม่มีประวัติ");
+        }
+
+        init();
+    </script>
+    <script src="snow.js"></script>
+</body>
+</html>
+
+
