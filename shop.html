@@ -1,107 +1,101 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Set shop - ร้านค้า</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Set Shop - หน้าร้าน</title>
     <link rel="stylesheet" href="shop-styles.css">
     <style>
-        /* ย้ายสไตล์หิมะมาไว้ในนี้โดยตรง เพื่อป้องกันไฟล์ตีกัน */
-        #snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
-        .snowflake { position: absolute; top: -10px; color: #fff; user-select: none; z-index: 9999; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)); animation: fall linear infinite, sway ease-in-out infinite; }
-        @keyframes fall { 0% { top: -10%; } 100% { top: 110%; } }
-        @keyframes sway { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(50px); } }
+        #snow-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+        .snowflake{position:absolute;top:-10px;color:#fff;animation:fall linear infinite,sway ease-in-out infinite}
+        @keyframes fall{0%{top:-10%}100%{top:110%}}
+        @keyframes sway{0%,100%{transform:translateX(0)}50%{transform:translateX(50px)}}
+        .history-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:10000;align-items:center;justify-content:center}
+        .modal-box{background:#1a1b1e;padding:25px;border-radius:12px;width:90%;max-width:500px;border:1px solid #ff9900;max-height:80vh;overflow-y:auto}
     </style>
 </head>
-
 <body>
-    <!-- ระบบนำทาง -->
     <nav class="shop-nav">
         <div class="nav-container">
             <div class="logo">SET<span>SHOP</span></div>
             <div class="nav-right">
-                <span id="user-display" class="user-greeting">ผู้ใช้: กำลังโหลด...</span>
-                <span id="user-balance" class="user-greeting" style="color: #4CAF50; font-weight: 700; background: rgba(76,175,80,0.1); padding: 4px 10px; border-radius: 4px;">ยอดเงิน: 0 S</span>
-                <button id="logout-btn" class="nav-btn logout-btn">ออกจากระบบ</button>
+                <span id="u-name">...</span> | <span id="u-bal" style="color:#4CAF50">0 S</span>
+                <button onclick="showHistory()" class="nav-btn">ประวัติ</button>
+                <button onclick="logout()" class="nav-btn">ออก</button>
             </div>
         </div>
     </nav>
 
-    <main class="shop-container">
-        <div class="section-header">
-            <div class="title-area">
-                <h2 class="main-title"><span class="dot"></span> รายการสินค้า</h2>
-                <p class="sub-title">Product Recommended</p>
-            </div>
-        </div>
+    <div class="shop-container">
+        <h2 style="color:#ff9900">รายการสินค้า</h2>
+        <div id="p-grid" class="products-grid"></div>
+    </div>
 
-        <div class="products-grid" id="products-grid">
-            <div style="color: #888; text-align: center; grid-column: 1/-1; padding: 50px;">กำลังโหลดสินค้า...</div>
+    <!-- ประวัติ Modal -->
+    <div id="h-modal" class="history-modal">
+        <div class="modal-box">
+            <h2 style="color:#ff9900">ประวัติการซื้อ</h2>
+            <div id="h-list"></div>
+            <button onclick="document.getElementById('h-modal').style.display='none'" style="margin-top:20px;width:100%;padding:10px">ปิด</button>
         </div>
-    </main>
+    </div>
 
     <script>
-        const API_BASE = "/api";
-        const activeUser = localStorage.getItem('lastLoggedInUser');
+        const user = localStorage.getItem('lastLoggedInUser');
+        if(!user) window.location.href='login.html';
+        document.getElementById('u-name').textContent = user;
 
-        if (!activeUser) window.location.href = 'login.html';
-        else document.getElementById('user-display').textContent = `ผู้ใช้: ${activeUser}`;
+        async function loadData() {
+            // โหลดเงิน
+            const uRes = await fetch('/api/users');
+            const users = await uRes.json();
+            const me = users.find(u => u.username === user);
+            if(me) document.getElementById('u-bal').textContent = me.balance + ' S';
 
-        async function init() {
-            try {
-                // ดึงข้อมูลยอดเงิน
-                const uRes = await fetch(`${API_BASE}/users`);
-                const users = await uRes.json();
-                const user = users.find(u => u.username === activeUser);
-                if (user) document.getElementById('user-balance').textContent = `ยอดเงิน: ${user.balance || 0} S`;
-
-                // ดึงรายการสินค้า
-                const pRes = await fetch(`${API_BASE}/products`);
-                const products = await pRes.json();
-                const grid = document.getElementById('products-grid');
-                grid.innerHTML = '';
-
-                products.forEach(p => {
-                    grid.innerHTML += `
-                        <div class="product-card">
-                            <div class="product-image">
-                                <div class="img-placeholder">${p.imgText || p.name.substring(0,2)}</div>
-                            </div>
-                            <div class="product-info">
-                                <h3 class="product-name">${p.name}</h3>
-                                <div class="stock">เหลือ ${p.stock} ชิ้น</div>
-                                <div class="price-row">
-                                    <div class="price">${p.price} ฿</div>
-                                    <button class="buy-btn" onclick="buy('${p.id}', '${p.name}', ${p.price})">ซื้อเลย</button>
-                                </div>
-                            </div>
+            // โหลดสินค้า
+            const pRes = await fetch('/api/products');
+            const products = await pRes.json();
+            const grid = document.getElementById('p-grid');
+            grid.innerHTML = '';
+            products.forEach(p => {
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <div class="product-info">
+                            <h3>${p.name}</h3>
+                            <p>ราคา ${p.price} ฿ | เหลือ ${p.stock}</p>
+                            <button onclick="buy('${p.id}')" class="buy-btn">ซื้อเลย</button>
                         </div>
-                    `;
-                });
-            } catch (err) { console.error(err); }
+                    </div>`;
+            });
         }
 
-        window.buy = async (id, name, price) => {
-            if (!confirm(`ยืนยันการซื้อ ${name} ราคา ${price} ฿?`)) return;
-            const res = await fetch(`${API_BASE}/buy`, {
+        async function buy(id) {
+            if(!confirm('ยืนยันซื้อ?')) return;
+            const res = await fetch('/api/buy', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: activeUser, productId: id })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: user, productId: id})
             });
             const data = await res.json();
-            if (data.success) { alert('สำเร็จ!'); init(); }
+            if(data.success) { alert('สำเร็จ!'); loadData(); }
             else alert(data.message);
-        };
+        }
 
-        document.getElementById('logout-btn').onclick = () => {
-            localStorage.removeItem('lastLoggedInUser');
-            window.location.href = 'login.html';
-        };
+        async function showHistory() {
+            const res = await fetch('/api/orders/' + user);
+            const history = await res.json();
+            const list = document.getElementById('h-list');
+            list.innerHTML = history.length ? '' : 'ไม่มีประวัติ';
+            history.forEach(h => {
+                list.innerHTML += `<div style="border-bottom:1px solid #444;padding:10px">${h.itemName} - ${h.price} ฿ (${h.date})</div>`;
+            });
+            document.getElementById('h-modal').style.display = 'flex';
+        }
 
-        init();
+        function logout() { localStorage.clear(); window.location.href='login.html'; }
+        loadData();
     </script>
     <script src="snow.js"></script>
 </body>
 </html>
+
