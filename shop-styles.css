@@ -384,6 +384,20 @@ body {
     height: 32px;
 }
 
+.product-card {
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.product-card:active {
+    transform: scale(0.98);
+}
+
+#details-modal .modal-box {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #111214, #0a0b0d);
+}
+
 /* Scrollbar Fix */
 ::-webkit-scrollbar {
     width: 6px;
@@ -397,5 +411,6 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary);
 }
+
 
 
