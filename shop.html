@@ -56,8 +56,10 @@
         <div class="nav-content">
             <div class="nav-logo">SET<span>SHOP</span></div>
             <div class="nav-actions">
-                <span id="user-info" style="font-size: 13px; color: #9ca3af; margin-right: 10px;">กำลังโหลด...</span>
-                <span id="balance-badge" class="btn-base" style="color: #00ff88; border-color: rgba(0,255,136,0.2);">0
+                <span id="user-info"
+                    style="font-size: 13px; color: var(--text-dim); margin-right: 10px;">กำลังโหลด...</span>
+                <span id="balance-badge" class="btn-base"
+                    style="color: var(--primary); border-color: rgba(255,153,0,0.2);">0
                     S</span>
                 <button onclick="window.location.href='troubleshoot.html'"
                     class="btn-base btn-outline-primary">แก้ไขปัญหา</button>
@@ -80,8 +82,9 @@
         <!-- Announcement Section -->
         <div class="announcement-card">
             <div style="text-align: center; margin-bottom: 30px;">
-                <h2 style="font-size: 20px; color: #fff;">📢 ประกาศจากช่องทาง SET SHOP</h2>
-                <p style="font-size: 12px; color: #555; margin-top: 4px;">โปรดอ่านเงื่อนไขก่อนการสั่งซื้อสินค้า</p>
+                <h2 style="font-size: 20px; color: var(--text-main);">📢 ประกาศจากช่องทาง SET SHOP</h2>
+                <p style="font-size: 12px; color: var(--text-dim); margin-top: 4px;">
+                    โปรดอ่านเงื่อนไขก่อนการสั่งซื้อสินค้า</p>
             </div>
 
             <div class="announcement-grid">
@@ -105,7 +108,8 @@
 
                 <div class="discord-box">
                     <h3 style="color: #5865F2; margin-bottom: 10px;">Top-up Discord</h3>
-                    <p style="font-size: 13px; color: #888; margin-bottom: 15px;">เติมเงินและติดต่อสอบถามได้ที่นี่</p>
+                    <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 15px;">
+                        เติมเงินและติดต่อสอบถามได้ที่นี่</p>
                     <a href="https://discord.gg/Bcj7bnVXcU" target="_blank" class="btn-base"
                         style="background: #5865F2; border: none; width: 100%; justify-content: center;">เข้าสู่
                         Discord</a>
@@ -132,14 +136,14 @@
                 <!-- History Items -->
             </div>
             <button onclick="closeAllModals()" class="btn-base"
-                style="width: 100%; margin-top: 20px; justify-content: center; background: #222;">ปิดหน้าต่าง</button>
+                style="width: 100%; margin-top: 20px; justify-content: center; background: var(--bg-main);">ปิดหน้าต่าง</button>
         </div>
     </div>
 
     <!-- Buy Confirmation Modal -->
     <div id="buy-modal" class="modal-overlay">
         <div class="modal-box">
-            <h2 style="font-size: 20px; color: #fff; text-align: center;">🛒 ยืนยันการสั่งซื้อ</h2>
+            <h2 style="font-size: 20px; color: var(--text-main); text-align: center;">🛒 ยืนยันการสั่งซื้อ</h2>
             <div class="confirm-info">
                 <div id="buy-item-name" style="font-size: 18px; font-weight: 700;">ชื่อสินค้า</div>
                 <div id="buy-item-price" style="font-size: 36px; font-weight: 900; margin: 10px 0; color: #ff9900;">0 ฿
@@ -163,8 +167,9 @@
                     <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
             </div>
-            <h2 style="color: #fff; margin-bottom: 10px; text-align: center;">สั่งซื้อสำเร็จ!</h2>
-            <p id="success-msg" style="color: #888; font-size: 14px; margin-bottom: 24px; text-align: center;">
+            <h2 style="color: var(--text-main); margin-bottom: 10px; text-align: center;">สั่งซื้อสำเร็จ!</h2>
+            <p id="success-msg"
+                style="color: var(--text-dim); font-size: 14px; margin-bottom: 24px; text-align: center;">
                 รายการของคุณถูกบันทึกเรียบร้อยแล้ว</p>
             <button onclick="closeAllModals()" class="btn-base btn-primary"
                 style="width: 100%; justify-content: center;">ตกลง</button>
@@ -182,11 +187,14 @@
                 <div id="det-img" class="product-img-box"
                     style="height: 150px; border-radius: 16px; margin-bottom: 20px;"></div>
                 <h3 id="det-name" style="font-size: 22px; font-weight: 800; margin-bottom: 10px;"></h3>
-                <div id="det-price" style="font-size: 28px; font-weight: 900; color: #ff9900; margin-bottom: 20px;">
+                <div id="det-price"
+                    style="font-size: 28px; font-weight: 900; color: var(--primary); margin-bottom: 12px;">
                 </div>
+                <div id="det-stock" class="det-stock-badge stock-in" style="margin-bottom: 20px;">สต็อก: -</div>
                 <div
-                    style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass); padding: 20px; border-radius: 16px; margin-bottom: 24px;">
-                    <p id="det-desc" style="color: #aaa; font-size: 14px; line-height: 1.6; white-space: pre-wrap;"></p>
+                    style="background: #fdfdfd; border: 1px solid var(--border-glass); padding: 20px; border-radius: 16px; margin-bottom: 24px;">
+                    <p id="det-desc"
+                        style="color: var(--text-dim); font-size: 14px; line-height: 1.6; white-space: pre-wrap;"></p>
                 </div>
                 <div class="confirm-actions">
                     <button onclick="closeAllModals()" class="btn-base"
@@ -226,15 +234,22 @@
                 allProducts.forEach(p => {
                     const fallback = p.name.substring(0, 2);
                     const imgHtml = p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" onerror="onImageError(this, '${fallback}')">` : fallback;
+                    const stock = p.stock ?? 0;
+                    const inStock = stock > 0;
+                    const stockBadgeClass = inStock ? 'stock-badge stock-in' : 'stock-badge stock-out';
+                    const stockLabel = inStock ? `🟢 สต็อก: ${stock} ชิ้น` : '🔴 สินค้าหมด';
+                    const buyBtnHtml = inStock
+                        ? `<button onclick="event.stopPropagation(); openBuyModal('${p.id}', '${p.name}', ${p.price})" class="btn-base btn-primary">ซื้อเลย</button>`
+                        : `<button class="btn-base btn-soldout" disabled>หมดแล้ว</button>`;
                     grid.innerHTML += `
                         <div class="product-card" onclick="openDetailsModal('${p.id}')" style="cursor: pointer;">
                             <div class="product-img-box">${imgHtml}</div>
                             <div class="product-meta">
                                 <div class="p-name">${p.name}</div>
-                                <div style="color: #666; font-size: 13px; margin-bottom: 20px;">พร้อมส่ง 24 ชม.</div>
+                                <div class="${stockBadgeClass}">${stockLabel}</div>
                                 <div class="p-footer">
                                     <div class="p-price">${p.price} ฿</div>
-                                    <button onclick="event.stopPropagation(); openBuyModal('${p.id}', '${p.name}', ${p.price})" class="btn-base btn-primary">ซื้อเลย</button>
+                                    ${buyBtnHtml}
                                 </div>
                             </div>
                         </div>`;
@@ -250,8 +265,8 @@
                 [...orders, ...orders].forEach(o => {
                     track.innerHTML += `
                         <div class="order-tag">
-                            <div style="color: #ff9900; font-weight: 800;">${o.itemName}</div>
-                            <div style="font-size: 11px; color: #00ff88;">ขายแล้ว!</div>
+                            <div style="color: var(--primary); font-weight: 800;">${o.itemName}</div>
+                            <div style="font-size: 11px; color: var(--accent-green);">ขายแล้ว!</div>
                         </div>`;
                 });
 
@@ -262,18 +277,38 @@
             const p = allProducts.find(prod => prod.id === id);
             if (!p) return;
 
+            const stock = p.stock ?? 0;
+            const inStock = stock > 0;
             document.getElementById('det-name').textContent = p.name;
             document.getElementById('det-price').textContent = `${p.price} ฿`;
             document.getElementById('det-desc').textContent = p.desc || 'ไม่มีคำอธิบายสินค้า';
+
+            // Stock display in modal
+            const detStockEl = document.getElementById('det-stock');
+            if (detStockEl) {
+                detStockEl.textContent = inStock ? `🟢 สต็อกคงเหลือ: ${stock} ชิ้น` : '🔴 สินค้าหมดสต็อกแล้ว';
+                detStockEl.className = inStock ? 'det-stock-badge stock-in' : 'det-stock-badge stock-out';
+            }
 
             const imgBox = document.getElementById('det-img');
             imgBox.style.padding = '10px';
             imgBox.innerHTML = p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%; height:100%; object-fit:contain; border-radius:12px;">` : p.name.substring(0, 2);
 
-            document.getElementById('det-buy-btn').onclick = () => {
-                closeAllModals();
-                openBuyModal(p.id, p.name, p.price);
-            };
+            const detBuyBtn = document.getElementById('det-buy-btn');
+            if (inStock) {
+                detBuyBtn.disabled = false;
+                detBuyBtn.className = 'btn-base btn-primary';
+                detBuyBtn.textContent = 'ซื้อตอนนี้เลย';
+                detBuyBtn.onclick = () => {
+                    closeAllModals();
+                    openBuyModal(p.id, p.name, p.price);
+                };
+            } else {
+                detBuyBtn.disabled = true;
+                detBuyBtn.className = 'btn-base btn-soldout';
+                detBuyBtn.textContent = 'หมดแล้ว';
+                detBuyBtn.onclick = null;
+            }
 
             document.getElementById('details-modal').style.display = 'flex';
         }
@@ -346,13 +381,13 @@
                     list.innerHTML += `
                         <div class="history-card">
                             <div>
-                                <div style="font-weight: 700; color: #fff;">${h.itemName}</div>
-                                <div style="font-size: 11px; color: #666;">${h.date}</div>
-                                ${h.downloadLink ? `<div style="font-size: 11px; color: #ff9900; margin-top: 4px;">คีย์: ${h.downloadLink}</div>` : ''}
+                                <div style="font-weight: 700; color: var(--text-main);">${h.itemName}</div>
+                                <div style="font-size: 11px; color: var(--text-dim);">${h.date}</div>
+                                ${h.downloadLink ? `<div style="font-size: 11px; color: var(--primary); margin-top: 4px;">คีย์: ${h.downloadLink}</div>` : ''}
                             </div>
                             <div style="text-align: right;">
-                                <div style="color: #ff9900; font-weight: 900;">${h.price} ฿</div>
-                                <div style="font-size: 10px; color: #00ff88; font-weight: 800;">สำเร็จ</div>
+                                <div style="color: var(--primary); font-weight: 900;">${h.price} ฿</div>
+                                <div style="font-size: 10px; color: var(--accent-green); font-weight: 800;">สำเร็จ</div>
                             </div>
                         </div>`;
                 });
@@ -376,4 +411,3 @@
 </body>
 
 </html>
-
