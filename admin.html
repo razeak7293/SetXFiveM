@@ -52,7 +52,7 @@
                     <h3>ผู้ใช้งานทั้งหมด</h3>
                     <p id="total-users">0</p>
                 </div>
-                <div class="card" onclick="showTroubleshootSection()" style="cursor: pointer; border-color: #8da2fb;">
+                <div class="card" onclick="showSection('troubleshoot')" style="cursor: pointer; border-color: #8da2fb;">
                     <h3>รายการแก้ไขปัญหา</h3>
                     <p id="total-troubleshoot">0</p>
                 </div>
@@ -408,31 +408,37 @@
                 if (!title) return;
                 showAdminPrompt('เพิ่มรายละเอียด', 'คำอธิบายสั้นๆ:', '', 'ถัดไป', '#8da2fb', '#8da2fb', (desc) => {
                     showAdminPrompt('เพิ่มลิงก์', 'ลิงก์วิธีแก้ไข (URL):', '#', 'บันทึก', '#8da2fb', '#8da2fb', async (link) => {
-                        try {
-                            const res = await fetch(`${API_BASE}/troubleshoot`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ title, desc, link: link || "#", category: "Troubleshooting" })
-                            });
-                            if ((await res.json()).success) {
-                                loadTroubleshootData();
-                                showAdminAlert('สำเร็จ', 'เพิ่มรายการแก้ไขปัญหาเรียบร้อยแล้ว');
-                            }
-                        } catch (err) { alert('ผิดพลาด'); }
-                    });
+                        const data = await res.json();
+                        if (data.success) {
+                            loadTroubleshootData();
+                            showAdminAlert('สำเร็จ', 'เพิ่มรายการแก้ไขปัญหาเรียบร้อยแล้ว');
+                        } else {
+                            showAdminAlert('ผิดพลาด', data.message || 'ไม่สามารถเพิ่มข้อมูลได้');
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        showAdminAlert('ผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ (404 Not Found?)');
+                    }
                 });
             });
+        });
         }
 
         async function deleteTroubleshoot(id, title) {
             if (!confirm(`ยืนยันการลบ "${title}" ใช่หรือไม่?`)) return;
             try {
                 const res = await fetch(`${API_BASE}/troubleshoot/${id}`, { method: 'DELETE' });
-                if ((await res.json()).success) {
+                const data = await res.json();
+                if (data.success) {
                     loadTroubleshootData();
                     showAdminAlert('สำเร็จ', 'ลบรายการเรียบร้อยแล้ว');
+                } else {
+                    showAdminAlert('ผิดพลาด', data.message || 'ลบข้อมูลไม่สำเร็จ');
                 }
-            } catch (err) { alert('ผิดพลาด'); }
+            } catch (err) {
+                console.error(err);
+                showAdminAlert('ผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+            }
         }
 
         async function editTroubleshoot(id) {
@@ -454,11 +460,17 @@
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ title, desc, link, category: item.category })
                                 });
-                                if ((await saveRes.json()).success) {
+                                const data = await saveRes.json();
+                                if (data.success) {
                                     loadTroubleshootData();
                                     showAdminAlert('สำเร็จ', 'อัปเดตข้อมูลเรียบร้อยแล้ว');
+                                } else {
+                                    showAdminAlert('ผิดพลาด', data.message || 'อัปเดตข้อมูลไม่สำเร็จ');
                                 }
-                            } catch (err) { alert('ผิดพลาด'); }
+                            } catch (err) {
+                                console.error(err);
+                                showAdminAlert('ผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+                            }
                         });
                     });
                 });
@@ -740,5 +752,6 @@
 </body>
 
 </html>
+
 
 
