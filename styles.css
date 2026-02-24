@@ -182,3 +182,80 @@ input:focus {
     text-decoration: none;
     font-weight: 700;
 }
+
+/* ปุ่มลงชื่อเข้าใช้ (outline style) */
+.login-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    border: 2px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background: var(--primary);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 153, 0, 0.2);
+}
+
+/* submit btn สำหรับหน้า register */
+.submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary), #ffa500);
+    color: #fff;
+    border: none;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 14px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(255, 153, 0, 0.2);
+    transition: var(--transition);
+    opacity: 0.5;
+}
+
+.submit-btn:not([disabled]) {
+    opacity: 1;
+}
+
+.submit-btn:not([disabled]):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px rgba(255, 153, 0, 0.3);
+}
+
+/* ข้อความลิงก์ด้านล่าง */
+.login-link-text {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.login-link-text a {
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.login-link-text a:hover {
+    text-decoration: underline;
+}
+
+/* logo ในหน้าสมัครสมาชิก */
+.logo {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
