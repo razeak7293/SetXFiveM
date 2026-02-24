@@ -56,7 +56,11 @@ function loadDB() {
                     { id: "3", name: "โปร HEARTOPIA ( 1วัน )", price: 20, stock: 2, type: "โปร HEARTOPIA", desc: "รวมฟังก์ชั่นโกงแบบจัดเต็ม" },
                     { id: "4", name: "🔴 Internal พี่ฟาย เต็มระบบ", price: 30, stock: 35, type: "โปร FreeFire", desc: "ล็อคเป้าเป๊ะ ไม่แกว่ง" }
                 ],
-                orders: []
+                orders: [],
+                troubleshoot: [
+                    { id: "1", title: "วิธีซิงค์เวลา Windows - แก้ไขเวลาผิด", desc: "เรียนรู้วิธีซิงค์เวลาของ Windows ให้ถูกต้องและแก้ไขปัญหาที่เวลาไม่ตรง", link: "#", category: "Troubleshooting" },
+                    { id: "2", title: "วิธีดาวน์โหลดและใช้งาน WinRAR - โปรแกรมแตกไฟล์", desc: "เรียนรู้วิธีดาวน์โหลด ติดตั้ง และใช้งาน WinRAR สำหรับแตกไฟล์ .rar และ .zip", link: "#", category: "Troubleshooting" }
+                ]
             };
             saveDB(initialData);
             return initialData;
@@ -324,6 +328,61 @@ app.delete('/api/orders/:orderId', (req, res) => {
     res.json({ success: true, message: 'ลบประวัติคำสั่งซื้อสำเร็จ' });
 });
 
+// ------ TROUBLESHOOTING API ------
+
+// Get Troubleshooting Items
+app.get('/api/troubleshoot', (req, res) => {
+    const db = loadDB();
+    res.json(db.troubleshoot || []);
+});
+
+// Add Troubleshooting Item (Admin)
+app.post('/api/troubleshoot', (req, res) => {
+    const { title, desc, link, category } = req.body;
+    const db = loadDB();
+    if (!db.troubleshoot) db.troubleshoot = [];
+
+    const newItem = {
+        id: Date.now().toString(),
+        title,
+        desc,
+        link: link || "#",
+        category: category || "Troubleshooting"
+    };
+
+    db.troubleshoot.push(newItem);
+    saveDB(db);
+    res.json({ success: true, message: 'เพิ่มรายการแก้ไขปัญหาสำเร็จ!', item: newItem });
+});
+
+// Update Troubleshooting Item (Admin)
+app.put('/api/troubleshoot/:id', (req, res) => {
+    const { title, desc, link, category } = req.body;
+    const db = loadDB();
+    const index = db.troubleshoot.findIndex(t => t.id === req.params.id);
+
+    if (index === -1) return res.status(404).json({ success: false, message: 'ไม่พบรายการที่ต้องการแก้ไข' });
+
+    db.troubleshoot[index] = {
+        ...db.troubleshoot[index],
+        title: title || db.troubleshoot[index].title,
+        desc: desc || db.troubleshoot[index].desc,
+        link: link !== undefined ? link : db.troubleshoot[index].link,
+        category: category || db.troubleshoot[index].category
+    };
+
+    saveDB(db);
+    res.json({ success: true, message: 'อัปเดตข้อมูลสำเร็จ!', item: db.troubleshoot[index] });
+});
+
+// Delete Troubleshooting Item (Admin)
+app.delete('/api/troubleshoot/:id', (req, res) => {
+    const db = loadDB();
+    db.troubleshoot = (db.troubleshoot || []).filter(t => t.id !== req.params.id);
+    saveDB(db);
+    res.json({ success: true, message: 'ลบรายการสำเร็จ' });
+});
+
 const { exec } = require('child_process');
 
 // START SERVER
@@ -337,7 +396,3 @@ app.listen(PORT, '0.0.0.0', () => {
     // const startCmd = process.platform === 'win32' ? 'start' : (process.platform === 'darwin' ? 'open' : 'xdg-open');
     // exec(`${startCmd} ${url}`);
 });
-
-
-
-
