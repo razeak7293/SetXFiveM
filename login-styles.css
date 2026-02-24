@@ -2,14 +2,11 @@
 
 :root {
     --primary: #00ff41;
-    /* Classic Matrix/Terminal Green */
     --bg-dark: #0c0c0c;
-    /* CMD Black */
     --text-white: #f0f0f0;
     --text-muted: #888888;
     --border-cmd: #333333;
     --transition: none;
-    /* Terminal should feel snappy */
 }
 
 * {
@@ -30,7 +27,6 @@ body {
     position: relative;
 }
 
-/* Background - CMD Terminal Look */
 .background-wrapper {
     position: fixed;
     top: 0;
@@ -41,7 +37,17 @@ body {
     background: #000;
 }
 
-/* Subtle CRT Scanlines */
+#matrix-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    opacity: 0.35;
+    pointer-events: none;
+}
+
 .background-wrapper::after {
     content: "";
     position: absolute;
@@ -67,7 +73,6 @@ body {
     position: relative;
 }
 
-/* Terminal Header */
 .login-header {
     margin-bottom: 30px;
     border-bottom: 2px solid var(--primary);
@@ -89,30 +94,17 @@ body {
     animation: blink 1s step-end infinite;
 }
 
-@keyframes blink {
-    50% {
-        opacity: 0;
-    }
-}
+@keyframes blink { 50% { opacity: 0; } }
 
 .login-header p {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-muted);
 }
 
-.form-group {
-    margin-bottom: 20px;
-}
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: 13px; margin-bottom: 8px; }
 
-.form-group label {
-    display: block;
-    font-size: 14px;
-    margin-bottom: 8px;
-    color: var(--primary);
-}
-
-input[type="text"],
-input[type="password"] {
+input[type="text"], input[type="password"] {
     width: 100%;
     background: #000;
     border: 1px solid var(--primary);
@@ -122,145 +114,32 @@ input[type="password"] {
     outline: none;
 }
 
-input:focus {
-    background: #0a0a0a;
-    box-shadow: 0 0 5px var(--primary);
-}
+input:focus { background: #0a0a0a; box-shadow: 0 0 5px var(--primary); }
 
-.password-input-wrap {
-    position: relative;
-}
-
+.password-input-wrap { position: relative; }
 .toggle-password {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: var(--primary);
-    cursor: pointer;
-    font-size: 12px;
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--primary); cursor: pointer; font-size: 11px;
 }
 
 .primary-btn {
-    width: 100%;
-    background: var(--primary);
-    color: #000;
-    border: none;
-    padding: 14px;
-    font-size: 16px;
-    font-weight: 700;
-    font-family: inherit;
-    cursor: pointer;
-    text-transform: uppercase;
-    margin-top: 10px;
-}
-
-.primary-btn:hover {
-    background: #00cc33;
-    box-shadow: 0 0 10px var(--primary);
-}
-
-.forgot-link {
-    text-align: right;
-    margin-top: 10px;
-}
-
-.forgot-link a {
-    color: var(--text-muted);
-    font-size: 12px;
-    text-decoration: none;
-}
-
-.forgot-link a:hover {
-    color: var(--primary);
-    text-decoration: underline;
-}
-
-.divider {
-    text-align: center;
-    margin: 25px 0;
-    position: relative;
-}
-
-.divider::before {
-    content: "--------------------------------";
-    color: #333;
-    letter-spacing: -2px;
-}
-
-.divider span {
-    background: #000;
-    padding: 0 10px;
-    font-size: 12px;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    width: 100%; background: var(--primary); color: #000; border: none; padding: 14px;
+    font-size: 15px; font-weight: 700; cursor: pointer; text-transform: uppercase;
 }
 
 .secondary-btn {
-    width: 100%;
-    background: #000;
-    border: 1px solid var(--primary);
-    color: var(--primary);
-    padding: 12px;
-    font-size: 14px;
-    font-family: inherit;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 12px;
+    width: 100%; background: #000; border: 1px solid var(--primary); color: var(--primary);
+    padding: 12px; font-size: 13px; cursor: pointer; text-transform: uppercase;
 }
 
-.secondary-btn:hover {
-    background: rgba(0, 255, 65, 0.1);
-}
+.divider { text-align: center; margin: 25px 0; color: #333; font-size: 11px; }
 
-.signup-link {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 13px;
-    color: var(--text-muted);
-}
-
-.signup-link a {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 700;
-}
+.signup-link, .forgot-link { text-align: center; margin-top: 15px; font-size: 12px; }
+.signup-link a, .forgot-link a { color: var(--primary); text-decoration: none; }
 
 .error-message {
-    border: 1px solid #ff0000;
-    color: #ff0000;
-    padding: 10px;
-    font-size: 12px;
-    margin-bottom: 15px;
-    display: none;
-    text-align: center;
+    border: 1px solid #ff4d4f; color: #ff4d4f; padding: 10px; font-size: 12px;
+    margin-bottom: 15px; display: none; text-align: center; background: rgba(255, 77, 79, 0.1);
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #000;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #333;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
-}
-
-/* Snow container fix for CMD style */
-#snow-container {
-    z-index: 1000;
-}
+#snow-container { z-index: 1000; }
