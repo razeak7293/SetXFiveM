@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Shop - แก้ไขปัญหา</title>
+    <link rel="stylesheet" href="shop-styles.css">
+    <link rel="stylesheet" href="troubleshoot-styles.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-logo" onclick="window.location.href='shop.html'" style="cursor: pointer;">
+                SET<span>SHOP</span></div>
+            <div class="nav-actions">
+                <button onclick="window.location.href='shop.html'" class="btn-base">หน้าหลัก</button>
+                <span id="balance-badge" class="btn-base" style="color: #00ff88; border-color: rgba(0,255,136,0.2);">0
+                    S</span>
+                <button onclick="logout()" class="btn-base btn-outline-danger">ออกจากระบบ</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="troubleshoot-hero">
+        <div class="troubleshoot-header">
+            <h1>แก้ไขปัญหาโปรแกรม</h1>
+            <p>พบปัญหาในการใช้งาน? ค้นหาวิธีแก้ไขที่นี่</p>
+        </div>
+
+        <div class="troubleshoot-grid" id="troubleshoot-grid">
+            <!-- Loading items... -->
+            <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #555;">กำลังโหลดข้อมูล...</div>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE = "/api";
+        const currentUser = localStorage.getItem('lastLoggedInUser');
+        if (!currentUser) window.location.href = 'login.html';
+
+        async function updateNav() {
+            try {
+                const res = await fetch(`${API_BASE}/users/${currentUser}/balance`);
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('balance-badge').textContent = `${data.balance} S`;
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadTroubleshootItems() {
+            try {
+                const res = await fetch(`${API_BASE}/troubleshoot`);
+                const items = await res.json();
+                const grid = document.getElementById('troubleshoot-grid');
+                grid.innerHTML = '';
+
+                if (items.length === 0) {
+                    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #555;">ยังไม่มีข้อมูลการแก้ไขปัญหา</div>';
+                    return;
+                }
+
+                items.forEach(item => {
+                    grid.innerHTML += `
+                        <div class="troubleshoot-card" onclick="window.open('${item.link}', '_blank')">
+                            <div class="card-category">${item.category || 'Troubleshooting'}</div>
+                            <div class="card-title">${item.title}</div>
+                            <div class="card-desc">${item.desc}</div>
+                            <div class="card-footer">
+                                ดูวิธีแก้ไขปัญหา 
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </div>
+                        </div>`;
+                });
+            } catch (err) {
+                console.error('Failed to load troubleshoot items:', err);
+                document.getElementById('troubleshoot-grid').innerHTML = 'เกิดข้อผิดพลาดในการโหลดข้อมูล';
+            }
+        }
+
+        function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+        updateNav();
+        loadTroubleshootItems();
+    </script>
+</body>
+
+</html>

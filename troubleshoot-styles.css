@@ -1,0 +1,114 @@
+.troubleshoot-hero {
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 0 24px;
+}
+
+.troubleshoot-header {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 40px;
+}
+
+.troubleshoot-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.troubleshoot-header p {
+    color: var(--text-dim);
+    font-size: 14px;
+}
+
+.troubleshoot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+@media (max-width: 768px) {
+    .troubleshoot-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.troubleshoot-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    padding: 30px;
+    transition: var(--transition);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.troubleshoot-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 153, 0, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.troubleshoot-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary);
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.troubleshoot-card:hover::after {
+    opacity: 1;
+}
+
+.card-category {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(88, 101, 242, 0.2);
+    color: #8da2fb;
+    padding: 4px 10px;
+    border-radius: 6px;
+    width: fit-content;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.4;
+}
+
+.card-desc {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.card-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.card-footer svg {
+    transition: transform 0.3s ease;
+}
+
+.troubleshoot-card:hover .card-footer svg {
+    transform: translateX(5px);
+}
