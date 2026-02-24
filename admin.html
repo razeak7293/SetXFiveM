@@ -52,7 +52,18 @@
                     <h3>ผู้ใช้งานทั้งหมด</h3>
                     <p id="total-users">0</p>
                 </div>
+                <div class="card" onclick="showTroubleshootSection()" style="cursor: pointer; border-color: #8da2fb;">
+                    <h3>รายการแก้ไขปัญหา</h3>
+                    <p id="total-troubleshoot">0</p>
+                </div>
             </div>
+
+            <nav class="admin-tabs" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button onclick="showSection('products')" class="tab-btn active" id="tab-products">จัดการสินค้า</button>
+                <button onclick="showSection('users')" class="tab-btn" id="tab-users">จัดการผู้ใช้</button>
+                <button onclick="showSection('troubleshoot')" class="tab-btn"
+                    id="tab-troubleshoot">จัดการระบบแก้ไขปัญหา</button>
+            </nav>
 
             <section class="products-section"
                 style="margin-bottom: 30px; background: linear-gradient(145deg, #232527, #1b1c1e); padding: 24px; border-radius: 12px; border: 1px solid #393b3d; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
@@ -96,7 +107,34 @@
                 </div>
             </section>
 
-            <section class="users-section">
+            <section id="troubleshoot-section" class="products-section"
+                style="display: none; margin-bottom: 30px; background: linear-gradient(145deg, #1b1c1e, #141517); padding: 24px; border-radius: 12px; border: 1px solid #393b3d;">
+                <div class="section-header">
+                    <div>
+                        <h2>🛠️ จัดการระบบแก้ไขปัญหา</h2>
+                        <div style="font-size: 13px; color: #8da2fb; margin-top: 6px;">จัดการข้อมูลสำหรับปรากฎในหน้า
+                            "แก้ไขปัญหา"</div>
+                    </div>
+                    <button class="export-btn" style="background: #8da2fb; color: #111;"
+                        onclick="addNewTroubleshoot()">+ เพิ่มรายการใหม่</button>
+                </div>
+                <div class="table-responsive" style="margin-top: 20px;">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>หัวข้อ</th>
+                                <th>หมวดหมู่</th>
+                                <th>จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="troubleshoot-table-body">
+                            <!-- Troubleshoot items will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="users-section" class="users-section" style="display: none;">
                 <div class="section-header">
                     <h2>รายชื่อผู้ใช้ลงทะเบียนล่าสุด</h2>
                     <div style="display: flex; gap: 10px;">
@@ -277,11 +315,154 @@
             window.location.href = 'login.html';
         });
 
+        // CSV Export Logic
+        document.getElementById('export-csv-btn').onclick = async () => {
+            try {
+                const res = await fetch(`${API_BASE}/users`);
+                const users = await res.json();
+
+                if (!users || users.length === 0) {
+                    showAdminAlert('ข้อมูลว่างเปล่า', 'ไม่มีข้อมูลผู้ใช้ให้ออกรายงาน');
+                    return;
+                }
+
+                // CSV Header
+                let csv = 'ลำดับ,ชื่อผู้ใช้,รหัสผ่าน,ยอดเงิน,วันที่ลงทะเบียน\n';
+
+                // CSV Rows
+                users.forEach((u, i) => {
+                    const balance = u.balance || 0;
+                    const date = u.registerDate || '-';
+                    csv += `${i + 1},${u.username},${u.password},${balance},${date}\n`;
+                });
+
+                // Create blob and download (with BOM for Excel Thai support)
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `users_list_${new Date().getTime()}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showAdminAlert('สำเร็จ', 'ดาวน์โหลดไฟล์ข้อมูลผู้ใช้ (CSV) เรียบร้อยแล้ว');
+            } catch (err) {
+                console.error('Export error:', err);
+                showAdminAlert('ผิดพลาด', 'ไม่สามารถส่งออกข้อมูลได้');
+            }
+        };
+
         function showDashboard() {
             overlay.style.display = 'none';
             dashboard.style.display = 'block';
+            showSection('products');
             loadUsersData();
             loadProductsData();
+            loadTroubleshootData();
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('main section').forEach(s => s.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            if (sectionId === 'products') {
+                document.querySelector('.products-section').style.display = 'block';
+                document.getElementById('tab-products').classList.add('active');
+            } else if (sectionId === 'users') {
+                document.getElementById('users-section').style.display = 'block';
+                document.getElementById('tab-users').classList.add('active');
+            } else if (sectionId === 'troubleshoot') {
+                document.getElementById('troubleshoot-section').style.display = 'block';
+                document.getElementById('tab-troubleshoot').classList.add('active');
+            }
+        }
+
+        async function loadTroubleshootData() {
+            const tableBody = document.getElementById('troubleshoot-table-body');
+            const totalTroubleshootElem = document.getElementById('total-troubleshoot');
+            try {
+                const res = await fetch(`${API_BASE}/troubleshoot`);
+                const items = await res.json();
+                totalTroubleshootElem.textContent = items.length;
+                tableBody.innerHTML = '';
+                items.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${item.title}</td>
+                        <td><span style="background: rgba(88,101,242,0.1); color: #8da2fb; padding: 2px 8px; border-radius: 4px; font-size: 11px;">${item.category}</span></td>
+                        <td>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="editTroubleshoot('${item.id}')" style="background-color: #3b61fa; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">📝 แก้ไข</button>
+                                <button onclick="deleteTroubleshoot('${item.id}', '${item.title}')" style="background-color: transparent; color: #ff4d4f; border: 1px solid #ff4d4f; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">ลบ</button>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        async function addNewTroubleshoot() {
+            showAdminPrompt('เพิ่มรายการแก้ไขปัญหา', 'หัวข้อการแก้ไขปัญหา:', '', 'ถัดไป', '#8da2fb', '#8da2fb', (title) => {
+                if (!title) return;
+                showAdminPrompt('เพิ่มรายละเอียด', 'คำอธิบายสั้นๆ:', '', 'ถัดไป', '#8da2fb', '#8da2fb', (desc) => {
+                    showAdminPrompt('เพิ่มลิงก์', 'ลิงก์วิธีแก้ไข (URL):', '#', 'บันทึก', '#8da2fb', '#8da2fb', async (link) => {
+                        try {
+                            const res = await fetch(`${API_BASE}/troubleshoot`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ title, desc, link: link || "#", category: "Troubleshooting" })
+                            });
+                            if ((await res.json()).success) {
+                                loadTroubleshootData();
+                                showAdminAlert('สำเร็จ', 'เพิ่มรายการแก้ไขปัญหาเรียบร้อยแล้ว');
+                            }
+                        } catch (err) { alert('ผิดพลาด'); }
+                    });
+                });
+            });
+        }
+
+        async function deleteTroubleshoot(id, title) {
+            if (!confirm(`ยืนยันการลบ "${title}" ใช่หรือไม่?`)) return;
+            try {
+                const res = await fetch(`${API_BASE}/troubleshoot/${id}`, { method: 'DELETE' });
+                if ((await res.json()).success) {
+                    loadTroubleshootData();
+                    showAdminAlert('สำเร็จ', 'ลบรายการเรียบร้อยแล้ว');
+                }
+            } catch (err) { alert('ผิดพลาด'); }
+        }
+
+        async function editTroubleshoot(id) {
+            try {
+                const res = await fetch(`${API_BASE}/troubleshoot`);
+                const items = await res.json();
+                const item = items.find(t => t.id === id);
+                if (!item) return;
+
+                showAdminPrompt('แก้ไขหัวข้อ', 'หัวข้อ:', item.title, 'ถัดไป', '#3b61fa', '#3b61fa', (newTitle) => {
+                    const title = newTitle || item.title;
+                    showAdminPrompt('แก้ไขรายละเอียด', 'คำอธิบาย:', item.desc, 'ถัดไป', '#3b61fa', '#3b61fa', (newDesc) => {
+                        const desc = newDesc || item.desc;
+                        showAdminPrompt('แก้ไขลิงก์', 'ลิงก์ (URL):', item.link, 'บันทึก', '#3b61fa', '#3b61fa', async (newLink) => {
+                            const link = newLink || item.link;
+                            try {
+                                const saveRes = await fetch(`${API_BASE}/troubleshoot/${id}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ title, desc, link, category: item.category })
+                                });
+                                if ((await saveRes.json()).success) {
+                                    loadTroubleshootData();
+                                    showAdminAlert('สำเร็จ', 'อัปเดตข้อมูลเรียบร้อยแล้ว');
+                                }
+                            } catch (err) { alert('ผิดพลาด'); }
+                        });
+                    });
+                });
+            } catch (err) { console.error(err); }
         }
 
         async function loadProductsData() {
@@ -559,4 +740,5 @@
 </body>
 
 </html>
+
 
