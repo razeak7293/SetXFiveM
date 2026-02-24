@@ -361,6 +361,57 @@
             }
         };
 
+        async function downloadDatabase() {
+            try {
+                // This triggers the browser to download the file directly from the API
+                window.location.href = `${API_BASE}/admin/database/download`;
+            } catch (err) {
+                console.error('Download error:', err);
+                showAdminAlert('ผิดพลาด', 'ไม่สามารถดาวน์โหลดไฟล์สำรองได้');
+            }
+        }
+
+        async function restoreDatabase(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+
+            if (!confirm(`⚠️ คำเตือน: การกู้คืนข้อมูลจะล้างข้อมูลปัจจุบันทั้งหมดและแทนที่ด้วยข้อมูลในไฟล์ "${file.name}" ยืนยันใช่หรือไม่?`)) {
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const jsonData = JSON.parse(e.target.result);
+
+                    // Validate if it's a valid database file
+                    if (!jsonData.users || !jsonData.products) {
+                        throw new Error('รูปแบบไฟล์ฐานข้อมูลไม่ถูกต้อง');
+                    }
+
+                    const res = await fetch(`${API_BASE}/admin/database/restore`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(jsonData)
+                    });
+
+                    const data = await res.json();
+                    if (data.success) {
+                        showAdminAlert('สำเร็จ', 'กู้คืนข้อมูลทั้งหมดของเว็บเรียบร้อยแล้ว! ระบบกำลังเริ่มใหม่...');
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showAdminAlert('ผิดพลาด', data.message);
+                    }
+                } catch (err) {
+                    console.error('Restore error:', err);
+                    showAdminAlert('ผิดพลาด', 'ไฟล์ JSON ไม่ถูกต้อง หรือไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
         function showDashboard() {
             overlay.style.display = 'none';
             dashboard.style.display = 'block';
