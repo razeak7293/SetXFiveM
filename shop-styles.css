@@ -3,16 +3,16 @@
 :root {
     --primary: #ff9900;
     --primary-hover: #ff7700;
-    --bg-main: #f8f9fa;
-    --bg-card: #ffffff;
-    --border-glass: rgba(0, 0, 0, 0.05);
-    --text-main: #1a1a1a;
-    --text-dim: #64748b;
+    --bg-main: #0d0d0d;
+    --bg-card: #1a1a1a;
+    --border-glass: rgba(255, 255, 255, 0.06);
+    --text-main: #f0f0f0;
+    --text-dim: #888888;
     --accent-green: #10b981;
     --accent-red: #ef4444;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
 }
 
 * {
@@ -29,8 +29,8 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     background-image:
-        radial-gradient(circle at 0% 0%, rgba(255, 153, 0, 0.03) 0%, transparent 40%),
-        radial-gradient(circle at 100% 100%, rgba(255, 153, 0, 0.03) 0%, transparent 40%);
+        radial-gradient(circle at 0% 0%, rgba(255, 153, 0, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 100% 100%, rgba(255, 153, 0, 0.06) 0%, transparent 40%);
 }
 
 /* --- Navigation Bar --- */
@@ -38,7 +38,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(13, 13, 13, 0.85);
     backdrop-filter: blur(15px);
     border-bottom: 1.5px solid var(--border-glass);
     padding: 16px 0;
@@ -81,12 +81,12 @@ body {
     align-items: center;
     gap: 8px;
     border: 1.5px solid var(--border-glass);
-    background: #fff;
+    background: #1e1e1e;
     color: var(--text-main);
 }
 
 .btn-base:hover {
-    background: #f8f9fa;
+    background: #2a2a2a;
     transform: translateY(-2px);
     box-shadow: var(--shadow-sm);
 }
@@ -121,7 +121,7 @@ body {
 }
 
 .carousel-box {
-    background: #fff;
+    background: #1a1a1a;
     border: 1.5px solid var(--border-glass);
     border-radius: 20px;
     padding: 20px 0;
@@ -148,7 +148,7 @@ body {
 }
 
 .order-tag {
-    background: #fdfdfd;
+    background: #1e1e1e;
     padding: 14px 22px;
     border-radius: 12px;
     border: 1px solid var(--border-glass);
@@ -206,7 +206,7 @@ body {
 .product-img-box {
     width: 100%;
     height: 220px;
-    background: #fdfdfd;
+    background: #111111;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -248,7 +248,7 @@ body {
 
 /* --- Announcement Section --- */
 .announcement-card {
-    background: #fff;
+    background: #1a1a1a;
     border: 1.5px solid var(--border-glass);
     border-radius: 24px;
     padding: 40px;
@@ -313,7 +313,7 @@ body {
 }
 
 .modal-box {
-    background: #ffffff;
+    background: #1a1a1a;
     border-radius: 28px;
     width: 90%;
     max-width: 500px;
@@ -335,7 +335,7 @@ body {
 }
 
 .history-card {
-    background: #fdfdfd;
+    background: #222222;
     border: 1.5px solid var(--border-glass);
     padding: 18px;
     border-radius: 16px;
@@ -348,7 +348,7 @@ body {
 
 .history-card:hover {
     border-color: var(--primary);
-    background: #fff;
+    background: #2a2a2a;
 }
 
 /* Scrollbar Modern */
@@ -361,13 +361,13 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #d1d5db;
+    background: #444444;
     border-radius: 10px;
     border: 2px solid var(--bg-main);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #9ca3af;
+    background: #555555;
 }
 
 
