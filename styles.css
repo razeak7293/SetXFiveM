@@ -1,10 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap');
 
 :root {
-    --primary: #00ff41;
-    /* Matrix Green */
-    --bg-dark: #000000;
-    --text-muted: #888888;
+    --primary: #ff9900;
+    --primary-hover: #ff7700;
+    --bg-light: #f8f9fa;
+    --surface: #ffffff;
+    --text-main: #1a1a1a;
+    --text-muted: #6c757d;
+    --border: #e9ecef;
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -14,18 +19,17 @@
 }
 
 body {
-    font-family: 'Roboto Mono', monospace;
-    background-color: var(--bg-dark);
-    color: var(--primary);
+    font-family: 'Outfit', 'Noto Sans Thai', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
     overflow-x: hidden;
+    position: relative;
 }
 
-/* Background Terminal Look */
 .background-wrapper {
     position: fixed;
     top: 0;
@@ -33,191 +37,148 @@ body {
     width: 100%;
     height: 100%;
     z-index: -1;
-    background: #000;
+    background: #f8f9fa;
+    overflow: hidden;
 }
 
-.background-wrapper::after {
-    content: "";
+.bg-shape {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-    background-size: 100% 4px;
-    z-index: 100;
-    pointer-events: none;
+    filter: blur(80px);
+    border-radius: 50%;
+    z-index: -1;
+    animation: float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.signup-container {
-    width: 100%;
-    max-width: 500px;
-    padding: 20px;
-    z-index: 2;
+.shape-1 {
+    width: 500px;
+    height: 500px;
+    background: rgba(255, 153, 0, 0.15);
+    top: -100px;
+    right: -100px;
 }
 
-.logo {
-    font-size: 32px;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 20px;
+.shape-2 {
+    width: 400px;
+    height: 400px;
+    background: rgba(255, 153, 0, 0.1);
+    bottom: -50px;
+    left: -50px;
+    animation-delay: -5s;
 }
 
-.logo::before {
-    content: "[ ";
+.shape-3 {
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 153, 0, 0.05);
+    top: 40%;
+    left: 20%;
+    animation-delay: -10s;
 }
 
-.logo::after {
-    content: " ]_";
-    animation: blink 1s step-end infinite;
-}
+@keyframes float {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
 
-@keyframes blink {
-    50% {
-        opacity: 0;
+    100% {
+        transform: translate(50px, 100px) rotate(15deg);
     }
 }
 
-.signup-box {
-    background: #000;
-    border: 2px solid var(--primary);
-    padding: 30px;
-    box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+/* Redesigning signup container for modern look */
+.signup-container {
+    width: 100%;
+    max-width: 440px;
+    padding: 60px 45px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1.5px solid rgba(255, 255, 255, 0.6);
+    border-radius: 40px;
+    box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
 }
 
-.signup-box h2 {
-    font-size: 14px;
+.signup-container:hover {
+    box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.15);
+}
+
+.signup-header {
     text-align: center;
-    margin-bottom: 30px;
-    color: var(--text-muted);
+    margin-bottom: 35px;
 }
 
-.signup-box h2::before {
-    content: "> ";
+.signup-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -1px;
+}
+
+.signup-header p {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-top: 10px;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 22px;
 }
 
 .form-group label {
     display: block;
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 600;
     margin-bottom: 8px;
-    color: var(--primary);
+    color: var(--text-main);
 }
 
-.date-group {
-    display: flex;
-    gap: 10px;
-}
-
-.select-wrapper {
-    flex: 1;
-    position: relative;
-}
-
-select,
 input[type="text"],
 input[type="password"] {
     width: 100%;
-    background: #000;
-    border: 1px solid var(--primary);
-    color: var(--primary);
-    padding: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1.5px solid var(--border);
+    padding: 16px 20px;
+    border-radius: 16px;
     font-family: inherit;
-    font-size: 14px;
+    font-size: 15px;
     outline: none;
-    appearance: none;
+    transition: var(--transition);
 }
 
-input:focus,
-select:focus {
-    box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
-    background: #0a0a0a;
+input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(255, 153, 0, 0.1);
 }
 
-.select-wrapper::after {
-    content: "[V]";
-    font-size: 12px;
-    color: var(--primary);
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-}
-
-select option {
-    background: #000;
-    color: var(--primary);
-}
-
-.gender-group {
-    display: flex;
-    gap: 10px;
-}
-
-.gender-option {
-    flex: 1;
-}
-
-.gender-option input {
-    display: none;
-}
-
-.gender-btn {
-    background: #000;
-    border: 1px solid var(--primary);
-    height: 44px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--primary);
-    cursor: pointer;
-}
-
-.gender-option input:checked+.gender-btn {
-    background: var(--primary);
-    color: #000;
-}
-
-.terms {
-    font-size: 11px;
-    color: var(--text-muted);
-    line-height: 1.5;
-    margin: 20px 0;
-    text-align: justify;
-}
-
-.submit-btn {
+.btn-primary {
     width: 100%;
-    background: var(--primary);
-    color: #000;
+    background: linear-gradient(135deg, var(--primary), #ffa500);
+    color: #fff;
     border: none;
-    padding: 15px;
+    padding: 16px;
     font-size: 16px;
     font-weight: 700;
-    font-family: inherit;
+    border-radius: 14px;
     cursor: pointer;
-    text-transform: uppercase;
+    box-shadow: 0 10px 20px rgba(255, 153, 0, 0.2);
+    transition: var(--transition);
 }
 
-.submit-btn:disabled {
-    background: #111;
-    color: #333;
-    border: 1px solid #222;
-    cursor: not-allowed;
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px rgba(255, 153, 0, 0.3);
 }
 
-.submit-btn:not(:disabled):hover {
-    box-shadow: 0 0 15px var(--primary);
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 14px;
+    color: var(--text-muted);
 }
 
-/* Snow container fix */
-#snow-container {
-    z-index: 1000;
-}
-
-.snowflake {
-    color: #00ff41 !important;
-    /* Green snow for terminal look? Or keep white? */
-    /* Let's keep it white for contrast or make it subtle green */
+.login-link a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 700;
 }
