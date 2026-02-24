@@ -408,20 +408,26 @@
                 if (!title) return;
                 showAdminPrompt('เพิ่มรายละเอียด', 'คำอธิบายสั้นๆ:', '', 'ถัดไป', '#8da2fb', '#8da2fb', (desc) => {
                     showAdminPrompt('เพิ่มลิงก์', 'ลิงก์วิธีแก้ไข (URL):', '#', 'บันทึก', '#8da2fb', '#8da2fb', async (link) => {
-                        const data = await res.json();
-                        if (data.success) {
-                            loadTroubleshootData();
-                            showAdminAlert('สำเร็จ', 'เพิ่มรายการแก้ไขปัญหาเรียบร้อยแล้ว');
-                        } else {
-                            showAdminAlert('ผิดพลาด', data.message || 'ไม่สามารถเพิ่มข้อมูลได้');
+                        try {
+                            const res = await fetch(`${API_BASE}/troubleshoot`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ title, desc, link: link || "#", category: "Troubleshooting" })
+                            });
+                            const data = await res.json();
+                            if (data.success) {
+                                loadTroubleshootData();
+                                showAdminAlert('สำเร็จ', 'เพิ่มรายการแก้ไขปัญหาเรียบร้อยแล้ว');
+                            } else {
+                                showAdminAlert('ผิดพลาด', data.message || 'ไม่สามารถเพิ่มข้อมูลได้');
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            showAdminAlert('ผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ (404 Not Found?)');
                         }
-                    } catch (err) {
-                        console.error(err);
-                        showAdminAlert('ผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ (404 Not Found?)');
-                    }
+                    });
                 });
             });
-        });
         }
 
         async function deleteTroubleshoot(id, title) {
@@ -752,6 +758,7 @@
 </body>
 
 </html>
+
 
 
 
