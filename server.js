@@ -383,6 +383,37 @@ app.delete('/api/troubleshoot/:id', (req, res) => {
     res.json({ success: true, message: 'ลบรายการสำเร็จ' });
 });
 
+// ------ DATABASE BACKUP & RESTORE (Admin) ------
+
+// Download Database (JSON)
+app.get('/api/admin/database/download', (req, res) => {
+    if (fs.existsSync(DB_FILE)) {
+        res.download(DB_FILE, 'database_backup.json');
+    } else {
+        res.status(404).json({ success: false, message: 'ไม่พบไฟล์ฐานข้อมูล' });
+    }
+});
+
+// Upload/Restore Database (JSON)
+app.post('/api/admin/database/restore', (req, res) => {
+    try {
+        const uploadedData = req.body;
+
+        // Basic verification
+        if (!uploadedData || !uploadedData.users || !uploadedData.products) {
+            return res.status(400).json({ success: false, message: 'รูปแบบข้อมูลไม่ถูกต้อง (ต้องมี users และ products)' });
+        }
+
+        // Overwrite existing database
+        saveDB(uploadedData);
+
+        res.json({ success: true, message: 'กู้คืนข้อมูลสำเร็จ! ระบบจะใช้ข้อมูลใหม่ทันที' });
+    } catch (err) {
+        console.error('❌ Restore error:', err);
+        res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการกู้คืน: ' + err.message });
+    }
+});
+
 const { exec } = require('child_process');
 
 // START SERVER
