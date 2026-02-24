@@ -1,27 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
 
 :root {
-    --primary: #ff9900;
-    --primary-glow: rgba(255, 153, 0, 0.4);
-    --bg-dark: #08090a;
-    --bg-card: rgba(18, 20, 24, 0.7);
-    --border-glass: rgba(255, 255, 255, 0.08);
-    --text-white: #ffffff;
-    --text-muted: #94a3b8;
-    --accent-blue: #3b82f6;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --primary: #00ff41;
+    /* Classic Matrix/Terminal Green */
+    --bg-dark: #0c0c0c;
+    /* CMD Black */
+    --text-white: #f0f0f0;
+    --text-muted: #888888;
+    --border-cmd: #333333;
+    --transition: none;
+    /* Terminal should feel snappy */
 }
 
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    font-family: 'Noto Sans Thai', 'Outfit', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: var(--bg-dark);
-    color: var(--text-white);
+    font-family: 'Roboto Mono', 'Consolas', 'Courier New', monospace;
+    background-color: var(--bg-dark);
+    color: var(--primary);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -30,7 +30,7 @@ body {
     position: relative;
 }
 
-/* Background Animations */
+/* Background - CMD Terminal Look */
 .background-wrapper {
     position: fixed;
     top: 0;
@@ -38,132 +38,93 @@ body {
     width: 100%;
     height: 100%;
     z-index: -1;
-    background: radial-gradient(circle at 20% 30%, #1a1c20 0%, #08090a 100%);
-    overflow: hidden;
+    background: #000;
 }
 
-.background-wrapper::before {
-    content: "";
-    position: absolute;
-    width: 200%;
-    height: 200%;
-    top: -50%;
-    left: -50%;
-    background-image:
-        radial-gradient(circle at 30% 30%, rgba(255, 153, 0, 0.05) 0%, transparent 40%),
-        radial-gradient(circle at 70% 60%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);
-    animation: rotateBg 20s linear infinite;
-}
-
-@keyframes rotateBg {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.bg-blur {
-    display: none;
-    /* Replaced by wrapper pseudo-element */
-}
-
-/* Mesh Pattern */
+/* Subtle CRT Scanlines */
 .background-wrapper::after {
     content: "";
     position: absolute;
     inset: 0;
-    background-image:
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-    background-size: 40px 40px;
-    mask-image: radial-gradient(circle at center, black, transparent 80%);
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%,
+            rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg,
+            rgba(255, 0, 0, 0.06),
+            rgba(0, 255, 0, 0.02),
+            rgba(0, 0, 255, 0.06));
+    z-index: 100;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
 }
 
 .login-wrapper {
     width: 100%;
-    max-width: 440px;
-    padding: 40px;
-    background: var(--bg-card);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--border-glass);
-    border-radius: 24px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    max-width: 500px;
+    padding: 30px;
+    background: #000;
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
     z-index: 10;
-    animation: slideUp 0.6s ease-out;
+    position: relative;
 }
 
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
+/* Terminal Header */
 .login-header {
-    text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 10px;
 }
 
 .login-header h1 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 32px;
-    font-weight: 800;
-    margin: 0 0 8px;
-    background: linear-gradient(135deg, #fff 0%, #ff9900 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -0.5px;
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.login-header h1::before {
+    content: "> ";
+}
+
+.login-header h1::after {
+    content: "_";
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
 }
 
 .login-header p {
-    font-size: 14px;
+    font-size: 12px;
     color: var(--text-muted);
-    margin: 0;
 }
 
 .form-group {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .form-group label {
     display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-muted);
+    font-size: 14px;
     margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: var(--primary);
 }
 
 input[type="text"],
-input[type="password"],
-input[type="email"] {
+input[type="password"] {
     width: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--border-glass);
-    border-radius: 12px;
-    padding: 14px 16px;
-    color: #fff;
-    font-size: 15px;
+    background: #000;
+    border: 1px solid var(--primary);
+    padding: 12px;
+    color: var(--primary);
     font-family: inherit;
-    transition: var(--transition);
+    outline: none;
 }
 
 input:focus {
-    outline: none;
-    border-color: var(--primary);
-    background: rgba(0, 0, 0, 0.5);
-    box-shadow: 0 0 0 4px rgba(255, 153, 0, 0.1);
+    background: #0a0a0a;
+    box-shadow: 0 0 5px var(--primary);
 }
 
 .password-input-wrap {
@@ -172,21 +133,14 @@ input:focus {
 
 .toggle-password {
     position: absolute;
-    right: 12px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: var(--text-muted);
+    color: var(--primary);
     cursor: pointer;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    transition: var(--transition);
-}
-
-.toggle-password:hover {
-    color: #fff;
+    font-size: 12px;
 }
 
 .primary-btn {
@@ -194,90 +148,82 @@ input:focus {
     background: var(--primary);
     color: #000;
     border: none;
-    border-radius: 12px;
-    padding: 16px;
-    font-size: 15px;
-    font-weight: 800;
-    font-family: 'Outfit', sans-serif;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
     cursor: pointer;
-    transition: var(--transition);
-    box-shadow: 0 10px 15px -3px rgba(255, 153, 0, 0.3);
+    text-transform: uppercase;
+    margin-top: 10px;
 }
 
 .primary-btn:hover {
-    transform: translateY(-2px);
-    background: #ffb133;
-    box-shadow: 0 20px 25px -5px rgba(255, 153, 0, 0.4);
-}
-
-.primary-btn:active {
-    transform: translateY(0);
+    background: #00cc33;
+    box-shadow: 0 0 10px var(--primary);
 }
 
 .forgot-link {
-    text-align: center;
-    margin: 16px 0;
+    text-align: right;
+    margin-top: 10px;
 }
 
 .forgot-link a {
     color: var(--text-muted);
-    font-size: 13px;
+    font-size: 12px;
     text-decoration: none;
-    transition: var(--transition);
 }
 
 .forgot-link a:hover {
     color: var(--primary);
+    text-decoration: underline;
 }
 
 .divider {
-    display: flex;
-    align-items: center;
-    margin: 24px 0;
-    gap: 16px;
+    text-align: center;
+    margin: 25px 0;
+    position: relative;
 }
 
-.divider::before,
-.divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--border-glass);
+.divider::before {
+    content: "--------------------------------";
+    color: #333;
+    letter-spacing: -2px;
 }
 
 .divider span {
+    background: #000;
+    padding: 0 10px;
     font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 600;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .secondary-btn {
     width: 100%;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-glass);
-    border-radius: 12px;
+    background: #000;
+    border: 1px solid var(--primary);
+    color: var(--primary);
     padding: 12px;
-    color: #fff;
     font-size: 14px;
-    font-weight: 600;
+    font-family: inherit;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     margin-bottom: 12px;
-    transition: var(--transition);
 }
 
 .secondary-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 255, 65, 0.1);
 }
 
 .signup-link {
     text-align: center;
-    margin-top: 24px;
-    font-size: 14px;
+    margin-top: 20px;
+    font-size: 13px;
     color: var(--text-muted);
 }
 
@@ -287,61 +233,34 @@ input:focus {
     font-weight: 700;
 }
 
-.signup-link a:hover {
-    text-decoration: underline;
-}
-
 .error-message {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    color: #f87171;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    margin-bottom: 16px;
+    border: 1px solid #ff0000;
+    color: #ff0000;
+    padding: 10px;
+    font-size: 12px;
+    margin-bottom: 15px;
     display: none;
     text-align: center;
-    animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
-}
-
-@keyframes shake {
-
-    10%,
-    90% {
-        transform: translate3d(-1px, 0, 0);
-    }
-
-    20%,
-    80% {
-        transform: translate3d(2px, 0, 0);
-    }
-
-    30%,
-    50%,
-    70% {
-        transform: translate3d(-4px, 0, 0);
-    }
-
-    40%,
-    60% {
-        transform: translate3d(4px, 0, 0);
-    }
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--bg-dark);
+    background: #000;
 }
 
-::-webkit-scrollbar-theme {
-    background: #1e293b;
-    border-radius: 10px;
+::-webkit-scrollbar-thumb {
+    background: #333;
 }
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--primary);
+}
+
+/* Snow container fix for CMD style */
+#snow-container {
+    z-index: 1000;
 }
