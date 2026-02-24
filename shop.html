@@ -188,9 +188,9 @@
                     style="height: 150px; border-radius: 16px; margin-bottom: 20px;"></div>
                 <h3 id="det-name" style="font-size: 22px; font-weight: 800; margin-bottom: 10px;"></h3>
                 <div id="det-price"
-                    style="font-size: 28px; font-weight: 900; color: var(--primary); margin-bottom: 12px;">
+                    style="font-size: 28px; font-weight: 900; color: var(--primary); margin-bottom: 8px;">
                 </div>
-                <div id="det-stock" class="det-stock-badge stock-in" style="margin-bottom: 20px;">สต็อก: -</div>
+                <div id="det-stock" style="color: #666; font-size: 13px; margin-bottom: 20px;">สต็อก: -</div>
                 <div
                     style="background: #fdfdfd; border: 1px solid var(--border-glass); padding: 20px; border-radius: 16px; margin-bottom: 24px;">
                     <p id="det-desc"
@@ -235,21 +235,16 @@
                     const fallback = p.name.substring(0, 2);
                     const imgHtml = p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" onerror="onImageError(this, '${fallback}')">` : fallback;
                     const stock = p.stock ?? 0;
-                    const inStock = stock > 0;
-                    const stockBadgeClass = inStock ? 'stock-badge stock-in' : 'stock-badge stock-out';
-                    const stockLabel = inStock ? `🟢 สต็อก: ${stock} ชิ้น` : '🔴 สินค้าหมด';
-                    const buyBtnHtml = inStock
-                        ? `<button onclick="event.stopPropagation(); openBuyModal('${p.id}', '${p.name}', ${p.price})" class="btn-base btn-primary">ซื้อเลย</button>`
-                        : `<button class="btn-base btn-soldout" disabled>หมดแล้ว</button>`;
+                    const stockText = stock > 0 ? `สต็อก: ${stock} ชิ้น` : 'สินค้าหมด';
                     grid.innerHTML += `
                         <div class="product-card" onclick="openDetailsModal('${p.id}')" style="cursor: pointer;">
                             <div class="product-img-box">${imgHtml}</div>
                             <div class="product-meta">
                                 <div class="p-name">${p.name}</div>
-                                <div class="${stockBadgeClass}">${stockLabel}</div>
+                                <div style="color: #666; font-size: 13px; margin-bottom: 20px;">${stockText}</div>
                                 <div class="p-footer">
                                     <div class="p-price">${p.price} ฿</div>
-                                    ${buyBtnHtml}
+                                    <button onclick="event.stopPropagation(); openBuyModal('${p.id}', '${p.name}', ${p.price})" class="btn-base btn-primary">ซื้อเลย</button>
                                 </div>
                             </div>
                         </div>`;
@@ -278,37 +273,23 @@
             if (!p) return;
 
             const stock = p.stock ?? 0;
-            const inStock = stock > 0;
             document.getElementById('det-name').textContent = p.name;
             document.getElementById('det-price').textContent = `${p.price} ฿`;
             document.getElementById('det-desc').textContent = p.desc || 'ไม่มีคำอธิบายสินค้า';
 
-            // Stock display in modal
             const detStockEl = document.getElementById('det-stock');
             if (detStockEl) {
-                detStockEl.textContent = inStock ? `🟢 สต็อกคงเหลือ: ${stock} ชิ้น` : '🔴 สินค้าหมดสต็อกแล้ว';
-                detStockEl.className = inStock ? 'det-stock-badge stock-in' : 'det-stock-badge stock-out';
+                detStockEl.textContent = `สต็อก: ${stock} ชิ้น`;
             }
 
             const imgBox = document.getElementById('det-img');
             imgBox.style.padding = '10px';
             imgBox.innerHTML = p.imageUrl ? `<img src="${p.imageUrl}" alt="${p.name}" style="width:100%; height:100%; object-fit:contain; border-radius:12px;">` : p.name.substring(0, 2);
 
-            const detBuyBtn = document.getElementById('det-buy-btn');
-            if (inStock) {
-                detBuyBtn.disabled = false;
-                detBuyBtn.className = 'btn-base btn-primary';
-                detBuyBtn.textContent = 'ซื้อตอนนี้เลย';
-                detBuyBtn.onclick = () => {
-                    closeAllModals();
-                    openBuyModal(p.id, p.name, p.price);
-                };
-            } else {
-                detBuyBtn.disabled = true;
-                detBuyBtn.className = 'btn-base btn-soldout';
-                detBuyBtn.textContent = 'หมดแล้ว';
-                detBuyBtn.onclick = null;
-            }
+            document.getElementById('det-buy-btn').onclick = () => {
+                closeAllModals();
+                openBuyModal(p.id, p.name, p.price);
+            };
 
             document.getElementById('details-modal').style.display = 'flex';
         }
