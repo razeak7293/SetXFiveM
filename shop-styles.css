@@ -246,58 +246,6 @@ body {
     color: var(--primary);
 }
 
-/* --- Stock Badge --- */
-.stock-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 5px 10px;
-    border-radius: 8px;
-    margin-bottom: 14px;
-    letter-spacing: 0.2px;
-}
-
-.stock-in {
-    background: rgba(16, 185, 129, 0.1);
-    color: var(--accent-green);
-    border: 1px solid rgba(16, 185, 129, 0.25);
-}
-
-.stock-out {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--accent-red);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-/* Stock badge inside detail modal */
-.det-stock-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 6px 14px;
-    border-radius: 10px;
-    letter-spacing: 0.2px;
-}
-
-/* Sold Out Button */
-.btn-soldout {
-    background: #e5e7eb;
-    color: #9ca3af;
-    border: none;
-    cursor: not-allowed;
-    opacity: 0.8;
-}
-
-.btn-soldout:hover {
-    transform: none;
-    box-shadow: none;
-    background: #e5e7eb;
-}
-
 /* --- Announcement Section --- */
 .announcement-card {
     background: #fff;
