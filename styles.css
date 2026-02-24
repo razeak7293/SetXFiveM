@@ -1,3 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap');
+
+:root {
+    --primary: #ff9900;
+    --primary-glow: rgba(255, 153, 0, 0.4);
+    --bg-dark: #08090a;
+    --bg-card: rgba(18, 20, 24, 0.7);
+    --border-glass: rgba(255, 255, 255, 0.08);
+    --text-white: #ffffff;
+    --text-muted: #94a3b8;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -5,32 +18,60 @@
 }
 
 body {
-    font-family: 'Noto Sans Thai', sans-serif;
-    color: #ffffff;
+    font-family: 'Noto Sans Thai', 'Outfit', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-white);
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #111214;
     overflow-x: hidden;
     position: relative;
 }
 
-/* Background setup to look premium, as if there are dark games behind it */
+/* Shared Background from login-styles */
 .background-wrapper {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1;
-    overflow: hidden;
-    background: radial-gradient(circle at 50% 50%, #1e1f23 0%, #0d0e10 100%);
-    /* We can use multiple gradients scattered around to simulate the background color blobs */
-    background-image: 
-        radial-gradient(circle at 10% 20%, rgba(40, 45, 60, 0.4) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(60, 30, 40, 0.4) 0%, transparent 40%),
-        radial-gradient(circle at 50% 50%, #1e1f23 0%, #0d0e10 100%);
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: radial-gradient(circle at 20% 30%, #1a1c20 0%, #08090a 100%);
+}
+
+.background-wrapper::before {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background-image:
+        radial-gradient(circle at 30% 30%, rgba(255, 153, 0, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 70% 60%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);
+    animation: rotateBg 20s linear infinite;
+}
+
+@keyframes rotateBg {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.background-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(circle at center, black, transparent 80%);
 }
 
 .signup-container {
@@ -40,46 +81,68 @@ body {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 440px;
+    max-width: 480px;
     padding: 20px;
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .logo {
-    font-size: 38px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 42px;
     font-weight: 800;
     margin-bottom: 24px;
-    letter-spacing: 0.5px;
-    text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #fff 0%, #ff9900 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     text-align: center;
 }
 
 .signup-box {
-    background-color: #232527;
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+    border-radius: 24px;
     width: 100%;
-    border-radius: 8px;
-    padding: 32px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    padding: 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 .signup-box h2 {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 700;
     text-align: center;
-    margin-bottom: 24px;
-    color: #f2f4f5;
+    margin-bottom: 32px;
+    color: var(--text-muted);
 }
 
 .form-group {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
 }
 
 .form-group label {
     font-size: 13px;
-    color: #b8b8b8;
-    margin-bottom: 6px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .date-group {
@@ -92,10 +155,33 @@ body {
     position: relative;
 }
 
+select,
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    color: #ffffff;
+    padding: 12px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: var(--transition);
+    appearance: none;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--primary);
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 0 4px rgba(255, 153, 0, 0.1);
+}
+
 .select-wrapper::after {
     content: "▼";
     font-size: 10px;
-    color: #b8b8b8;
+    color: var(--text-muted);
     position: absolute;
     right: 14px;
     top: 50%;
@@ -103,42 +189,13 @@ body {
     pointer-events: none;
 }
 
-select, input[type="text"], input[type="password"] {
-    width: 100%;
-    background-color: #111214;
-    border: 1px solid #393b3d;
-    border-radius: 6px;
-    color: #ffffff;
-    padding: 12px 14px;
-    font-size: 15px;
-    font-family: inherit;
-    outline: none;
-    transition: border-color 0.2s;
-    appearance: none;
-    cursor: pointer;
-}
-
-input[type="text"], input[type="password"] {
-    cursor: text;
-}
-
-select:focus, input[type="text"]:focus, input[type="password"]:focus {
-    border-color: #ffffff;
-}
-
 input::placeholder {
-    color: #7b7b7b;
-    font-weight: 400;
+    color: #4b5563;
 }
 
-/* Fix option color in standard select dropdowns */
 select option {
-    background-color: #232527;
+    background-color: #1a1c20;
     color: #ffffff;
-}
-
-select:invalid {
-    color: #7b7b7b;
 }
 
 .gender-group {
@@ -156,59 +213,63 @@ select:invalid {
 }
 
 .gender-btn {
-    background-color: #111214;
-    border: 1px solid #393b3d;
-    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
     padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #7b7b7b;
-    transition: all 0.2s;
+    color: var(--text-muted);
+    transition: var(--transition);
     height: 48px;
 }
 
-.gender-option input:checked + .gender-btn {
-    border-color: #ffffff;
-    color: #ffffff;
-    background-color: #2a2c30;
+.gender-option input:checked+.gender-btn {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(255, 153, 0, 0.1);
 }
 
 .gender-option:hover .gender-btn {
-    border-color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .terms {
     font-size: 11px;
-    color: #888888;
+    color: var(--text-muted);
     text-align: center;
-    line-height: 1.5;
-    margin-top: 24px;
-    margin-bottom: 24px;
+    line-height: 1.6;
+    margin: 24px 0;
 }
 
 .submit-btn {
     width: 100%;
-    background-color: #ffffff;
-    color: #111214;
+    background: var(--primary);
+    color: #000;
     border: none;
-    border-radius: 6px;
-    padding: 14px;
+    border-radius: 12px;
+    padding: 16px;
     font-size: 16px;
-    font-weight: 700;
-    font-family: inherit;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
+    transition: var(--transition);
+    box-shadow: 0 10px 15px -3px rgba(255, 153, 0, 0.3);
 }
 
 .submit-btn:disabled {
-    background-color: #E6E7E8;
-    color: #A0A0A0;
+    background: #334155;
+    color: #94a3b8;
     cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.6;
 }
 
 .submit-btn:not(:disabled):hover {
-    background-color: #e0e0e0;
+    transform: translateY(-2px);
+    background: #ffb133;
+    box-shadow: 0 20px 25px -5px rgba(255, 153, 0, 0.4);
 }
 
 /* Snow Effect */
@@ -229,32 +290,29 @@ select:invalid {
     user-select: none;
     z-index: 9999;
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
-    animation-name: fall, sway;
-    animation-timing-function: linear, ease-in-out;
-    animation-iteration-count: infinite, infinite;
+    animation: fall linear infinite, sway ease-in-out infinite;
 }
 
 @keyframes fall {
     0% {
         top: -10%;
     }
+
     100% {
         top: 110%;
     }
 }
 
 @keyframes sway {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateX(0);
     }
+
     50% {
         transform: translateX(50px);
     }
 }
-#snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
-.snowflake { position: absolute; top: -10px; color: #fff; user-select: none; z-index: 9999; filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)); animation: fall linear infinite, sway ease-in-out infinite; }
-@keyframes fall { 0% { top: -10%; } 100% { top: 110%; } }
-@keyframes sway { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(50px); } }
-
 
 
